@@ -1,37 +1,14 @@
 """
-MechForge Work Wrapper - 负责设置路径并启动工作台程序
+MechForge Work CLI Wrapper
+
+Entry point for the work CLI.
 """
 
-import os
-import sys
-from pathlib import Path
 
-# 设置环境变量
-os.environ['PYTHONIOENCODING'] = 'utf-8'
-
-# 获取项目根目录
-SCRIPT_DIR = Path(__file__).parent.resolve()
-
-# 添加各包的 src 目录到 sys.path
-for pkg in ['core', 'theme', 'ai', 'knowledge', 'work']:
-    src_path = SCRIPT_DIR / "packages" / pkg / "src"
-    sys.path.insert(0, str(src_path))
-
-# 设置 UTF-8 输出
-if sys.platform == "win32" and hasattr(sys.stdout, 'buffer'):
-    import io
-    try:
-        if not isinstance(sys.stdout, io.TextIOWrapper):
-            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-        if not isinstance(sys.stderr, io.TextIOWrapper):
-            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
-    except Exception:
-        pass
-
-
-def main():
-    """Work 模式入口"""
+def main() -> None:
+    """Main entry point for work CLI"""
     from mechforge_work.work_cli import main as work_main
+
     work_main()
 
 
