@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="centerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="256" height="256" rx="48" fill="#0f172a"/>
+  
+  <!-- 齿轮图标 -->
+  <g transform="translate(128, 128)">
+    <path d="M 0,-100 L 12,-85 L 35,-85 L 47,-100 
+             L 72,-75 L 85,-75 L 92,-92 
+             L 115,-70 L 128,-70 L 128,-55
+             L 150,-35 L 150,-20 L 128,-5
+             L 150,15 L 135,25 L 135,50
+             L 150,65 L 128,85 L 128,100
+             L 115,100 L 92,122 L 85,105
+             L 72,105 L 47,130 L 35,115
+             L 12,115 L 0,130 L -12,115
+             L -35,115 L -47,130 L -72,105
+             L -85,105 L -92,122 L -115,100
+             L -128,100 L -128,85 L -150,65
+             L -128,50 L -128,25 L -150,15
+             L -128,-5 L -150,-20 L -150,-35
+             L -128,-55 L -128,-70 L -115,-70
+             L -92,-92 L -85,-75 L -72,-75
+             L -47,-100 L -35,-85 L -12,-85 Z" 
+          fill="url(#mainGradient)"/>
+    
+    <!-- 内圆 -->
+    <circle cx="0" cy="0" r="45" fill="url(#centerGrad)"/>
+    
+    <!-- AI 符号 -->
+    <g fill="white">
+      <circle cx="0" cy="0" r="12"/>
+      <circle cx="0" cy="-28" r="6"/>
+      <circle cx="24" cy="14" r="6"/>
+      <circle cx="-24" cy="14" r="6"/>
+    </g>
+    
+    <!-- 连接线 -->
+    <g stroke="white" stroke-width="3" stroke-linecap="round">
+      <line x1="0" y1="-12" x2="0" y2="-22"/>
+      <line x1="10" y1="6" x2="20" y2="10"/>
+      <line x1="-10" y1="6" x2="-20" y2="10"/>
+    </g>
+  </g>
+</svg>
