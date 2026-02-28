@@ -13,7 +13,7 @@
   <a href="https://github.com/yd5768365-hue/mechforge/releases">
     <img src="https://img.shields.io/badge/version-0.5.0-blue.svg" alt="Version"/>
   </a>
-  <a href="https://github.comyd5768365-hue/mechforge/blob/main/LICENSE">
+  <a href="https://github.com/yd5768365-hue/mechforge/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
   </a>
   <a href="https://python.org">
@@ -26,6 +26,20 @@
     <img src="https://img.shields.io/github/stars/yd5768365-hue/mechforge.svg" alt="Stars"/>
   </a>
 </p>
+
+---
+
+## 📑 目录
+
+- [✨ 核心特性](#-核心特性)
+- [🚀 快速开始](#-快速开始)
+- [📖 使用指南](#-使用指南)
+- [🏗️ 技术架构](#-技术架构)
+- [📦 依赖分组](#-依赖分组)
+- [🛠️ 开发](#-开发)
+- [📂 项目结构](#-项目结构)
+- [📝 更新日志](#-更新日志)
+- [📄 许可证](#-许可证)
 
 ---
 
@@ -70,6 +84,13 @@
 ---
 
 ## 🚀 快速开始
+
+### 💻 系统要求
+
+- **Python**: 3.10 或更高版本
+- **操作系统**: Windows 10/11, macOS 10.15+, Ubuntu 20.04+
+- **内存**: 最低 4GB，推荐 8GB+
+- **磁盘空间**: 500MB（不含模型文件）
 
 ### 安装
 
@@ -128,6 +149,16 @@ mechforge-work
 # 启动 Web 界面
 mechforge-web
 ```
+
+### 📋 命令速查表
+
+| 命令 | 说明 | 示例 |
+|------|------|------|
+| `mechforge-ai` | 启动 AI 对话 | 直接运行进入交互模式 |
+| `mechforge-k` | 启动知识库 | `mechforge-k search "关键词"` |
+| `mechforge-work` | 启动 CAE 工作台 | `mechforge-work demo` |
+| `mechforge-web` | 启动 Web 界面 | 访问 http://localhost:8080 |
+| `mechforge-model` | 模型管理 | `mechforge-model list` |
 
 ---
 
@@ -219,6 +250,47 @@ pip install mechforge-ai[web]
 
 # 完整功能 (所有依赖)
 pip install mechforge-ai[all]
+```
+
+---
+
+## 🔧 故障排除
+
+### 常见问题
+
+**Q: 启动时提示 "命令未找到"**
+```bash
+# 确保安装成功并添加到 PATH
+pip install --upgrade mechforge-ai
+# 或重新安装
+pip install --force-reinstall mechforge-ai
+```
+
+**Q: CAE 功能无法使用**
+```bash
+# 检查 CAE 环境
+mechforge-work check
+
+# 安装 CAE 依赖
+pip install mechforge-ai[work]
+```
+
+**Q: 模型加载失败**
+```bash
+# 检查 Ollama 是否运行
+ollama list
+
+# 或检查 GGUF 文件路径
+mechforge-model list
+```
+
+**Q: Web 界面无法访问**
+```bash
+# 检查端口是否被占用
+mechforge-web --port 8081
+
+# 或使用不同的主机
+mechforge-web --host 0.0.0.0
 ```
 
 ---
