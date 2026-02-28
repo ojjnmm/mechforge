@@ -1,3 +1,3 @@
 @echo off
 cd /d "%~dp0"
-python run_main.py %*
+python run_work.py %*

@@ -22,7 +22,7 @@ def _get_app_dir() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys._MEIPASS)
     else:
-        return Path(__file__).parent.parent
+        return Path(__file__).parent.parent.parent.parent
 
 
 def _get_config_dir() -> Path:
@@ -31,12 +31,12 @@ def _get_config_dir() -> Path:
         base = Path.home() / "AppData" / "Local"
     else:
         base = Path.home() / ".config"
-    return base / "mechforge-ai"
+    return base / "mechforge"
 
 
 def _get_default_config_file() -> Path:
     """获取默认配置文件"""
-    # 优先级: ~/.mechforge-ai/config.yaml > ./config.yaml > 内置配置
+    # 优先级: ~/.mechforge/config.yaml > ./config.yaml > 内置配置
     user_config = _get_config_dir() / "config.yaml"
     if user_config.exists():
         return user_config
@@ -46,7 +46,7 @@ def _get_default_config_file() -> Path:
         return local_config
 
     # 内置配置
-    return _get_app_dir() / "mechforge_ai" / "config.yaml"
+    return _get_app_dir() / "packages" / "core" / "src" / "mechforge_core" / "config.yaml"
 
 
 # ==================== Provider 配置 ====================

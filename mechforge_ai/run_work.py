@@ -14,7 +14,7 @@ BASE_DIR = Path.home() / ".mechforge"
 (BASE_DIR / "history").mkdir(parents=True, exist_ok=True)
 
 # 添加各包的 src 目录到 sys.path
-for pkg in ['core', 'theme', 'ai', 'knowledge']:
+for pkg in ['core', 'theme', 'ai', 'knowledge', 'work']:
     src_path = script_dir / "packages" / pkg / "src"
     sys.path.insert(0, str(src_path))
 
@@ -29,7 +29,6 @@ if sys.platform == "win32" and hasattr(sys.stdout, 'buffer'):
     except Exception:
         pass
 
-# 运行主程序
-from mechforge_ai.terminal import MechForgeTerminal
-terminal = MechForgeTerminal()
-terminal.start()
+# 运行工作台
+from mechforge_work.work_cli import main
+main()

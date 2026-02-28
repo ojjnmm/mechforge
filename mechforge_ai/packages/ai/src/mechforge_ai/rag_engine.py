@@ -21,7 +21,8 @@ class RAGEngine:
 
         # 搜索路径
         search_paths = [
-            Path(__file__).parent.parent.parent / "knowledge",
+            Path(__file__).parent.parent.parent.parent / "knowledge",
+            Path(__file__).parent.parent.parent.parent / "data" / "knowledge",
             Path.home() / "knowledge",
             Path.cwd() / "knowledge",
         ]
@@ -60,7 +61,7 @@ class RAGEngine:
 
         # 尝试向量搜索
         try:
-            from ..knowledge.rag import search_with_chroma
+            from mechforge_knowledge.rag import search_with_chroma
             results = search_with_chroma(
                 self.knowledge_path,
                 query,
@@ -74,7 +75,7 @@ class RAGEngine:
 
         # 回退到关键词搜索
         try:
-            from ..knowledge.lookup import search_by_keyword
+            from mechforge_knowledge.lookup import search_by_keyword
             results = search_by_keyword(self.knowledge_path, query, limit=3)
             if results:
                 self._print_results_keyword(results)

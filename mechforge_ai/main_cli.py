@@ -1,13 +1,22 @@
 """
 MechForge AI CLI
 
-简单命令行入口
+Entry point for the CLI.
 """
 
 import os
 import sys
+from pathlib import Path
 
-# 设置 UTF-8 输出
+# Get script directory
+script_dir = Path(__file__).parent.resolve()
+
+# Add packages src directories to path
+for pkg in ['core', 'theme', 'ai', 'knowledge']:
+    src_path = script_dir / "packages" / pkg / "src"
+    sys.path.insert(0, str(src_path))
+
+# Set UTF-8 output
 if sys.platform == "win32" and hasattr(sys.stdout, 'buffer'):
     import io
     try:
@@ -19,18 +28,18 @@ if sys.platform == "win32" and hasattr(sys.stdout, 'buffer'):
         pass
 
 
-if __name__ == "__main__":
-    # 根据命令行参数判断启动模式
-    # mechforge-ai - 聊天模式
-    # mechforge-k - 知识库模式
-
-    # 检查是否包含 -k 参数
+def main():
+    """Main entry point"""
     if "-k" in sys.argv or "--k" in sys.argv or "k" in sys.argv:
-        # 知识库模式
-        from mechforge_ai.knowledge_cli import main as knowledge_main
+        # Knowledge mode
+        from mechforge_knowledge.cli import main as knowledge_main
         knowledge_main()
     else:
-        # 聊天模式
-        from mechforge_ai.chat.terminal import MechForgeTerminal
+        # Chat mode
+        from mechforge_ai.terminal import MechForgeTerminal
         terminal = MechForgeTerminal()
         terminal.start()
+
+
+if __name__ == "__main__":
+    main()

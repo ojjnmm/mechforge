@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mechforge-ai"
+version = "0.4.0"
+description = "MechForge AI - Chat terminal with RAG support"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "rich>=13.0",
+    "requests>=2.28",
+]
+
+[project.optional-dependencies]
+llm = [
+    "llama-cpp-python>=0.2.0",
+]
+rag = [
+    "chromadb>=0.4.0",
+    "sentence-transformers>=2.2.0",
+]
+
+[tool.setuptools]
+package-dir = {"mechforge_ai" = "src/mechforge_ai"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

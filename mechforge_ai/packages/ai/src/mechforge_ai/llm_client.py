@@ -7,8 +7,8 @@ import time
 from pathlib import Path
 from typing import List, Optional
 
-from ..config import get_config
-from .prompts import get_system_prompt
+from mechforge_core.config import get_config
+from mechforge_ai.prompts import get_system_prompt
 
 
 class LLMClient:

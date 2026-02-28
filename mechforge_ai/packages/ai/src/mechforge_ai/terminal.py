@@ -8,11 +8,11 @@ import json
 from pathlib import Path
 from typing import List, Optional
 
-from .llm_client import LLMClient
-from .rag_engine import RAGEngine
-from .ui_renderer import UIRenderer
-from .command_handler import CommandHandler
-from ..config import get_config
+from mechforge_ai.llm_client import LLMClient
+from mechforge_ai.rag_engine import RAGEngine
+from mechforge_theme.components import UIRenderer
+from mechforge_ai.command_handler import CommandHandler
+from mechforge_core.config import get_config
 
 
 class MechForgeTerminal:
@@ -30,7 +30,7 @@ class MechForgeTerminal:
         # 初始化各模块
         self.llm = LLMClient(model)
         self.llm.conversation_history = self.conversation_history
-        self.ui = UIRenderer(version="v0.3.0")
+        self.ui = UIRenderer(version="v0.4.0")
         self.command_handler = CommandHandler(self.config)
 
         # RAG 引擎
@@ -49,7 +49,8 @@ class MechForgeTerminal:
             knowledge_path = config_path
         else:
             search_paths = [
-                Path(__file__).parent.parent.parent / "knowledge",
+                Path(__file__).parent.parent.parent.parent / "knowledge",
+                Path(__file__).parent.parent.parent.parent / "data" / "knowledge",
                 Path.home() / "knowledge",
                 Path.cwd() / "knowledge",
             ]
@@ -137,7 +138,7 @@ class MechForgeTerminal:
         """加载命令历史"""
         try:
             import readline
-            history_file = Path.home() / ".mechforge-ai" / "history"
+            history_file = Path.home() / ".mechforge" / "history"
             if history_file.exists():
                 with open(history_file, "r", encoding="utf-8") as f:
                     for line in f:
@@ -151,7 +152,7 @@ class MechForgeTerminal:
     def _save_command_history(self):
         """保存命令历史"""
         try:
-            history_file = Path.home() / ".mechforge-ai" / "history"
+            history_file = Path.home() / ".mechforge" / "history"
             history_file.parent.mkdir(parents=True, exist_ok=True)
             with open(history_file, "w", encoding="utf-8") as f:
                 for cmd in self.command_history[-100:]:
@@ -162,7 +163,7 @@ class MechForgeTerminal:
     def _load_conversation_history(self):
         """加载对话历史"""
         try:
-            conv_file = Path.home() / ".mechforge-ai" / "conversation.json"
+            conv_file = Path.home() / ".mechforge" / "conversation.json"
             if conv_file.exists():
                 with open(conv_file, "r", encoding="utf-8") as f:
                     self.conversation_history = json.load(f)
@@ -172,7 +173,7 @@ class MechForgeTerminal:
     def _save_conversation_history(self):
         """保存对话历史"""
         try:
-            conv_file = Path.home() / ".mechforge-ai" / "conversation.json"
+            conv_file = Path.home() / ".mechforge" / "conversation.json"
             conv_file.parent.mkdir(parents=True, exist_ok=True)
             with open(conv_file, "w", encoding="utf-8") as f:
                 json.dump(self.conversation_history[-50:], f, ensure_ascii=False, indent=2)

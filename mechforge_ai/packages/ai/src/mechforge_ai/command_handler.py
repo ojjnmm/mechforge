@@ -8,7 +8,7 @@ from typing import List, Optional
 
 from rich.console import Console
 
-from ..config import get_config, save_config, reload_config
+from mechforge_core.config import get_config, save_config, reload_config
 
 console = Console()
 

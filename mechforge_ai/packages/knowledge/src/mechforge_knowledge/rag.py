@@ -22,7 +22,7 @@ def _get_cache_dir() -> Path:
     if getattr(sys, "frozen", False):
         base = Path(sys._MEIPASS)
     else:
-        base = Path(__file__).parent.parent.parent
+        base = Path(__file__).parent.parent.parent.parent
     return base / ".cache" / "rag"
 
 

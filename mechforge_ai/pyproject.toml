@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mechforge-ai"
-version = "0.3.0"
+version = "0.4.0"
 description = "MechForge AI - Mechanical Engineering AI Assistant"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -26,16 +26,25 @@ dev = [
 llm = [
     "llama-cpp-python>=0.2.0",
 ]
+rag = [
+    "chromadb>=0.4.0",
+    "sentence-transformers>=2.2.0",
+]
+work = [
+    "typer>=0.9.0",
+    "gmsh>=4.13.0",
+    "pyvista>=0.44.0",
+    "trimesh>=4.0.0",
+]
 
 [project.scripts]
-mechforge = "mechforge_ai.main_cli:main"
-mechforge-k = "mechforge_ai.knowledge_cli:main"
-
-[tool.setuptools.package-dir]
-"" = "."
+mechforge = "mechforge_ai.main_wrapper:main"
+mechforge-k = "mechforge_ai.knowledge_wrapper:main"
+mechforge-work = "mechforge_ai.work_wrapper:main"
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["packages"]
+include = ["mechforge_core*", "mechforge_theme*", "mechforge_ai*", "mechforge_knowledge*", "mechforge_work*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

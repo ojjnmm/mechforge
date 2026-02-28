@@ -23,7 +23,7 @@ def _get_cache_dir() -> Path:
     if getattr(sys, "frozen", False):
         base = Path(sys._MEIPASS)
     else:
-        base = Path(__file__).parent.parent.parent
+        base = Path(__file__).parent.parent.parent.parent
     return base / ".cache" / "rag"
 
 
@@ -317,4 +317,4 @@ def quick_lookup(knowledge_dir: Path, query: str) -> None:
 
 
 # 导出
-__all__ = ["interactive_lookup", "quick_lookup", "search_by_keyword"]
+__all__ = ["interactive_lookup", "quick_lookup", "search_by_keyword", "load_knowledge_files"]

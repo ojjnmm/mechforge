@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+"""
+MechForge AI Wrapper - 负责设置路径并启动主程序
+"""
+
 import os
 import sys
 from pathlib import Path
@@ -6,16 +9,12 @@ from pathlib import Path
 # 设置环境变量
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 
-# 获取脚本所在目录
-script_dir = Path(__file__).parent.resolve()
-BASE_DIR = Path.home() / ".mechforge"
-
-# 创建必要的目录
-(BASE_DIR / "history").mkdir(parents=True, exist_ok=True)
+# 获取项目根目录
+SCRIPT_DIR = Path(__file__).parent.resolve()
 
 # 添加各包的 src 目录到 sys.path
-for pkg in ['core', 'theme', 'ai', 'knowledge']:
-    src_path = script_dir / "packages" / pkg / "src"
+for pkg in ['core', 'theme', 'ai', 'knowledge', 'work']:
+    src_path = SCRIPT_DIR / "packages" / pkg / "src"
     sys.path.insert(0, str(src_path))
 
 # 设置 UTF-8 输出
@@ -29,7 +28,13 @@ if sys.platform == "win32" and hasattr(sys.stdout, 'buffer'):
     except Exception:
         pass
 
-# 运行主程序
-from mechforge_ai.terminal import MechForgeTerminal
-terminal = MechForgeTerminal()
-terminal.start()
+
+def main():
+    """主入口"""
+    from mechforge_ai.terminal import MechForgeTerminal
+    terminal = MechForgeTerminal()
+    terminal.start()
+
+
+if __name__ == "__main__":
+    main()
