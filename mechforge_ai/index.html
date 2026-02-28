@@ -96,35 +96,141 @@
         </div>
     </main>
 
-    <!-- 三种模式截图展示 -->
+    <!-- 三种模式切换展示 -->
     <section id="modes" class="mt-16 max-w-6xl mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-8">三大模式</h2>
-
-        <div class="grid md:grid-cols-3 gap-6">
-            <!-- AI 对话模式 -->
-            <div class="glass-card rounded-xl overflow-hidden border border-slate-700">
-                <div class="bg-slate-800 px-4 py-2 border-b border-slate-700">
-                    <span class="text-cyan-400 font-mono text-sm">🤖 AI 对话模式</span>
-                </div>
-                <img src="ai-chat-ui.png" alt="AI Chat UI" class="w-full">
+        <div class="glass-card rounded-xl overflow-hidden shadow-2xl border border-slate-700">
+            <!-- Tab 切换 -->
+            <div class="bg-slate-900/80 px-4 flex items-center gap-1 border-b border-slate-800">
+                <button onclick="switchTab('ai')" id="tab-ai" class="tab-active px-4 py-3 text-sm font-mono text-cyan-400 hover:text-white transition-colors">
+                    🤖 AI 对话
+                </button>
+                <button onclick="switchTab('knowledge')" id="tab-knowledge" class="px-4 py-3 text-sm font-mono text-slate-400 hover:text-white transition-colors">
+                    📚 知识库
+                </button>
+                <button onclick="switchTab('work')" id="tab-work" class="px-4 py-3 text-sm font-mono text-slate-400 hover:text-white transition-colors">
+                    ⚙️ CAE 工作台
+                </button>
             </div>
 
-            <!-- 知识库模式 -->
-            <div class="glass-card rounded-xl overflow-hidden border border-slate-700">
-                <div class="bg-slate-800 px-4 py-2 border-b border-slate-700">
-                    <span class="text-cyan-400 font-mono text-sm">📚 知识库模式</span>
+            <!-- AI 模式内容 -->
+            <div id="content-ai" class="terminal-content p-4 sm:p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto bg-[#0b0f19]">
+                <pre class="ascii-art text-[#1e90ff] font-bold text-[6px] sm:text-[8px] leading-none mb-2">
+███╗   ███╗███████╗ ██████╗██╗  ██╗███████╗ ██████╗ ██████╗  ██████╗ ███████╗
+████╗ ████║██╔════╝██╔════╝██║  ██║██╔════╝██╔═══██╗██╔══██╗██╔════╝ ██╔════╝
+██╔████╔██║█████╗  ██║     ███████║█████╗  ██║   ██║██████╔╝██║  ███╗█████╗
+██║╚██╔╝██║██╔══╝  ██║     ██╔══██║██╔══╝  ██║   ██║██╔══██╗██║   ██║██╔══╝
+██║ ╚═╝ ██║███████╗╚██████╗██║  ██║██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗
+╚═╝     ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+                </pre>
+
+                <div class="flex items-center text-cyan-500 mb-3 text-xs">
+                    <div class="flex-grow border-t border-cyan-800"></div>
+                    <span class="px-3 font-bold">MechForge System Initialized</span>
+                    <div class="flex-grow border-t border-cyan-800"></div>
                 </div>
-                <img src="knowledge-base-ui.png" alt="Knowledge Base UI" class="w-full">
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-y-1 gap-x-4 mb-4 w-max">
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">API</span><span class="text-green-400">Ollama</span></div>
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">RAG</span><span class="text-green-400 font-bold">ON</span></div>
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">模型</span><span class="text-cyan-400">qwen2.5</span></div>
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">消息</span><span class="text-cyan-400">5 条</span></div>
+                </div>
+
+                <div class="border border-slate-700 rounded p-2 mb-3 inline-block">
+                    <span class="text-[#00ff7f] text-xs">/status /info /rag /history /clear /model /exit</span>
+                </div>
+
+                <div class="text-[#00ff7f] mb-1">机械之美，AI 来造 ~</div>
+                <div class="text-slate-500 mb-4">对话历史: <span class="text-green-500">5</span> 条</div>
+
+                <div class="flex items-center">
+                    <span class="text-cyan-400 font-bold mr-2">[MechBot] ></span>
+                    <span class="text-white">帮我查一下轴承 6205 的额定动载荷</span><span class="w-2 h-4 bg-cyan-400 ml-1 cursor-blink"></span>
+                </div>
             </div>
 
-            <!-- CAE 工作台模式 -->
-            <div class="glass-card rounded-xl overflow-hidden border border-slate-700">
-                <div class="bg-slate-800 px-4 py-2 border-b border-slate-700">
-                    <span class="text-cyan-400 font-mono text-sm">⚙️ CAE 工作台</span>
+            <!-- 知识库模式内容 -->
+            <div id="content-knowledge" class="terminal-content hidden p-4 sm:p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto bg-[#0b0f19]">
+                <pre class="ascii-art text-[#1e90ff] font-bold text-[6px] sm:text-[8px] leading-none mb-2">
+███╗   ███╗███████╗ ██████╗██╗  ██╗███████╗ ██████╗ ██████╗  ██████╗ ███████╗
+████╗ ████║██╔════╝██╔════╝██║  ██║██╔════╝██╔═══██╗██╔══██╗██╔════╝ ██╔════╝
+██╔████╔██║█████╗  ██║     ███████║█████╗  ██║   ██║██████╔╝██║  ███╗█████╗
+██║╚██╔╝██║██╔══╝  ██║     ██╔══██║██╔══╝  ██║   ██║██╔══██╗██║   ██║██╔══╝
+██║ ╚═╝ ██║███████╗╚██████╗██║  ██║██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗
+╚═╝     ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+                </pre>
+
+                <div class="flex items-center text-cyan-500 mb-3 text-xs">
+                    <div class="flex-grow border-t border-cyan-800"></div>
+                    <span class="px-3 font-bold">Knowledge Base Ready</span>
+                    <div class="flex-grow border-t border-cyan-800"></div>
                 </div>
-                <img src="work-mech-ui.png" alt="Work Mode UI" class="w-full">
+
+                <div class="grid grid-cols-2 gap-2 mb-4 w-max">
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">模式</span><span class="text-green-400">知识库检索</span></div>
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">文档</span><span class="text-cyan-400">15 篇</span></div>
+                </div>
+
+                <div class="text-slate-400 mb-4">知识库: <span class="text-green-400">knowledge/</span> | 文档数: <span class="text-green-400">15 篇</span></div>
+
+                <div class="flex items-center">
+                    <span class="text-cyan-400 font-bold mr-2">[MechBot] ></span>
+                    <span class="text-white">螺栓  GB/T 5782</span><span class="w-2 h-4 bg-cyan-400 ml-1 cursor-blink"></span>
+                </div>
+
+                <div class="mt-3 text-slate-500 text-xs">
+                    <span class="text-yellow-500">输入关键词</span> <span class="text-slate-600">|</span> <span class="text-yellow-500">/list</span> <span class="text-slate-600">|</span> <span class="text-yellow-500">/exit</span>
+                </div>
+            </div>
+
+            <!-- Work 模式内容 -->
+            <div id="content-work" class="terminal-content hidden p-4 sm:p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto bg-[#0b0f19]">
+                <pre class="ascii-art text-[#1e90ff] font-bold text-[6px] sm:text-[8px] leading-none mb-2">
+███╗   ███╗███████╗ ██████╗██╗  ██╗███████╗ ██████╗ ██████╗  ██████╗ ███████╗
+████╗ ████║██╔════╝██╔════╝██║  ██║██╔════╝██╔═══██╗██╔══██╗██╔════╝ ██╔════╝
+██╔████╔██║█████╗  ██║     ███████║█████╗  ██║   ██║██████╔╝██║  ███╗█████╗
+██║╚██╔╝██║██╔══╝  ██║     ██╔══██║██╔══╝  ██║   ██║██╔══██╗██║   ██║██╔══╝
+██║ ╚═╝ ██║███████╗╚██████╗██║  ██║██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗
+╚═╝     ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+                </pre>
+
+                <div class="flex items-center text-cyan-500 mb-3 text-xs">
+                    <div class="flex-grow border-t border-cyan-800"></div>
+                    <span class="px-3 font-bold">Work Mode - Gmsh + CalculiX</span>
+                    <div class="flex-grow border-t border-cyan-800"></div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-y-1 gap-x-4 mb-4 w-max">
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">API</span><span class="text-green-400">CalculiX</span></div>
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">网格</span><span class="text-green-400">Gmsh</span></div>
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">可视化</span><span class="text-cyan-400">pyvista</span></div>
+                    <div class="flex gap-2"><span class="text-orange-400 font-bold w-10">模型</span><span class="text-cyan-400">未加载</span></div>
+                </div>
+
+                <div class="border border-slate-700 rounded p-2 mb-3 inline-block text-xs">
+                    <span class="text-[#00ff7f]">/load /mesh /bc /solve /show /export /status /exit</span>
+                </div>
+
+                <div class="flex items-center">
+                    <span class="text-cyan-400 font-bold mr-2">[MechBot] ></span>
+                    <span class="text-white">/load beam.stp</span><span class="w-2 h-4 bg-cyan-400 ml-1 cursor-blink"></span>
+                </div>
             </div>
         </div>
+
+        <script>
+            function switchTab(mode) {
+                document.querySelectorAll('.terminal-content').forEach(el => el.classList.add('hidden'));
+                document.getElementById('content-' + mode).classList.remove('hidden');
+
+                document.querySelectorAll('[id^="tab-"]').forEach(el => {
+                    el.classList.remove('tab-active', 'text-cyan-400');
+                    el.classList.add('text-slate-400');
+                });
+                document.getElementById('tab-' + mode).classList.add('tab-active', 'text-cyan-400');
+                document.getElementById('tab-' + mode).classList.remove('text-slate-400');
+            }
+        </script>
     </section>
 
     <section id="features" class="mt-24 max-w-7xl mx-auto px-4 mb-16">
