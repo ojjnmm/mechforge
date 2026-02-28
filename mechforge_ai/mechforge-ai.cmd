@@ -1,3 +1,4 @@
 @echo off
+chcp 65001 >nul
 cd /d "%~dp0"
-python run_main.py %*
+py run_main.py %*
