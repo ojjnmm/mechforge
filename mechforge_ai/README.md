@@ -1,13 +1,6 @@
 # MechForge AI
 
-<p align="center">
-  <img src="https://via.placeholder.com/200x200?text=MechForge" alt="MechForge Logo" width="200"/>
-</p>
-
-<p align="center">
-  <strong>机械设计师的本地 AI 工作台</strong><br>
-  真正懂机械、敢说真话、能真算
-</p>
+真正懂机械、敢说真话、能真算
 
 <p align="center">
   <a href="https://github.com/yd5768365-hue/mechforge/releases">
