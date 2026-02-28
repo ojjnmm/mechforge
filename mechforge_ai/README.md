@@ -47,21 +47,48 @@
 
 ---
 
-## 快速开始
+## 安装方式
+
+### 方式一：pip 直接安装 (推荐)
 
 ```bash
-# 安装依赖
+# 从 PyPI 安装 (即将上线)
+pip install mechforge-ai
+```
+
+### 方式二：从 GitHub 安装
+
+```bash
+# 安装最新版本
+pip install git+https://github.com/yd5768365-hue/mechforge.git
+
+# 或安装指定版本
+pip install git+https://github.com/yd5768365-hue/mechforge.git@v0.3.0
+```
+
+### 方式三：克隆后安装
+
+```bash
+# 克隆仓库
+git clone https://github.com/yd5768365-hue/mechforge.git
+cd mechforge
+
+# 安装依赖并运行
 pip install -e .
 
 # 启动 AI 对话模式
 mechforge-ai
-# 或
-python run_main.py
 
 # 启动知识库检索模式
 mechforge-k
-# 或
-python run_knowledge.py
+```
+
+### 方式四：便携版 (无需安装)
+
+```bash
+# 直接运行 Python 脚本
+python run_main.py      # AI 对话模式
+python run_knowledge.py # 知识库检索模式
 ```
 
 ### 配置
