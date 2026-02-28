@@ -69,6 +69,25 @@
 
 ---
 
+## 📸 产品展示
+
+### 功能概览
+<p align="center">
+  <img src="assets/images/feature-showcase.png" alt="MechForge AI 功能展示" width="800"/>
+</p>
+
+### AI 对话界面
+<p align="center">
+  <img src="assets/images/chat-interface.png" alt="AI 对话界面" width="800"/>
+</p>
+
+### CAE 分析可视化
+<p align="center">
+  <img src="assets/images/cae-analysis.png" alt="CAE 分析结果" width="700"/>
+</p>
+
+---
+
 ## 🚀 快速开始
 
 ### 安装
