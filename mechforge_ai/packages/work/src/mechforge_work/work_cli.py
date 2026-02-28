@@ -140,18 +140,8 @@ def print_status_panel():
 
 def print_help_panel():
     """打印帮助面板"""
-    help_text = """
-/load <文件路径>    加载 STEP/IGES/STL 文件
-/mesh [选项]       生成网格（默认 tet, size=5mm）
-/bc                设置边界条件（交互式向导）
-/solve [类型]      求解（static / thermal / modal ...）
-/show [结果类型]   显示结果（vonmises / displacement ...）
-/export <格式>     导出 vtk / frd / report.pdf
-/status            显示当前状态
-/clear             清屏
-/exit              退出
-"""
-    console.print(Panel(help_text, title="[bold orange1]可用命令[/bold orange1]", border_style="orange1", padding=(0, 2)))
+    help_text = Text("/status /info /load /mesh /bc /solve /show /export /clear /exit", style="spring_green3")
+    console.print(Panel(help_text, border_style="dim", padding=(0, 1)))
 
 
 def print_mesh_info():
