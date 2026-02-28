@@ -13,11 +13,14 @@
   <a href="https://github.com/yd5768365-hue/mechforge/releases">
     <img src="https://img.shields.io/badge/version-0.5.0-blue.svg" alt="Version"/>
   </a>
-  <a href="https://github.com/yd5768365-hue/mechforge/blob/main/LICENSE">
+  <a href="https://github.comyd5768365-hue/mechforge/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
   </a>
   <a href="https://python.org">
     <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python"/>
+  </a>
+  <a href="https://github.com/yd5768365-hue/mechforge/actions">
+    <img src="https://img.shields.io/badge/code%20quality-A+-brightgreen.svg" alt="Code Quality"/>
   </a>
   <a href="https://github.com/yd5768365-hue/mechforge/stargazers">
     <img src="https://img.shields.io/github/stars/yd5768365-hue/mechforge.svg" alt="Stars"/>
@@ -301,6 +304,39 @@ mechforge_ai/
 - **GitHub Issues**: [报告问题](https://github.com/yd5768365-hue/mechforge/issues)
 - **Email**: mechforge@example.com
 - **文档**: https://mechforge.ai
+
+---
+
+## 📝 更新日志
+
+### v0.5.0 (2026-03-01)
+
+#### ✨ 新特性
+- **Web 安全中间件**: 添加完整的 FastAPI 安全中间件栈
+  - 速率限制 (Rate Limiting)
+  - IP 过滤 (IP Filtering)
+  - 输入验证 (SQL/XSS 防护)
+  - 安全头 (Security Headers)
+  - API Token 管理
+- **核心模块增强**:
+  - 多级缓存系统 (Memory + Disk)
+  - SQLite 数据库支持 (对话历史、知识库索引)
+  - 结构化日志系统
+  - 懒加载优化
+- **代码质量**: 修复 756 个代码质量问题，达到 A+ 级
+  - ✅ Black 代码格式化
+  - ✅ Ruff 代码检查 (0 问题)
+  - ✅ 100% 代码质量修复完成
+
+#### 🔧 改进
+- 优化包结构和导入
+- 统一本地模型管理 (Ollama + GGUF)
+- 改进 CAE 工作台错误处理
+- 增强 MCP 工具支持
+
+#### 📦 依赖
+- 更新 pyproject.toml 配置
+- 添加可选依赖分组 [web], [work], [rag]
 
 ---
 
