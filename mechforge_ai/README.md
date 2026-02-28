@@ -300,7 +300,7 @@ pytest
 # 代码检查
 ruff check .
 black --check .
-mypy packages/
+mypy mechforge_*/
 
 # 构建文档
 python scripts/build_docs.py
@@ -315,16 +315,16 @@ python scripts/build_package.py
 
 ```
 mechforge_ai/
-├── packages/
-│   ├── mechforge_core/        # 核心模块
-│   │   ├── config.py          # Pydantic 配置
-│   │   ├── mcp/               # MCP 协议实现
-│   │   ├── gguf_server.py     # GGUF HTTP 服务器
-│   │   └── local_model_manager.py
-│   ├── mechforge_ai/          # AI 对话
-│   ├── mechforge_knowledge/   # 知识库
-│   ├── mechforge_work/        # CAE 工作台
-│   └── mechforge_web/         # Web 界面
+├── mechforge_core/            # 核心模块
+│   ├── config.py              # Pydantic 配置
+│   ├── mcp/                   # MCP 协议实现
+│   ├── gguf_server.py         # GGUF HTTP 服务器
+│   └── local_model_manager.py
+├── mechforge_ai/              # AI 对话
+├── mechforge_knowledge/       # 知识库
+├── mechforge_work/            # CAE 工作台
+├── mechforge_web/             # Web 界面
+├── mechforge_theme/           # 主题组件
 ├── docs/                      # 文档
 ├── tests/                     # 测试
 ├── examples/                  # 示例
