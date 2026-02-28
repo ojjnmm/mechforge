@@ -1,5 +1,4 @@
-# MechForge / MechChodes
-
+# MechForge 
 **机械设计师的本地 AI 工作台** —— 终于有一款**真正懂机械、敢说真话、能真算**的工具
 
 ## 界面预览
