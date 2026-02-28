@@ -1,4 +1,5 @@
-# MechForge 
+# MechForge
+
 **机械设计师的本地 AI 工作台** —— 终于有一款**真正懂机械、敢说真话、能真算**的工具
 
 ## 界面预览
@@ -10,6 +11,10 @@
 ### 知识库检索模式
 
 ![Knowledge Base UI](knowledge-base-ui.png)
+
+### CAE 工作台模式
+
+![Work Mode UI](work-mode-ui.png)
 
 ---
 
@@ -30,67 +35,77 @@
 - 会问工况、提醒裕度、对比选型、指出加工风险
 - 支持 /rag 临时调用知识库，聊天与查书无缝切换
 
-### 3. 真正能干活 —— 全栈本地 AI
-- 全程本地运行，无需联网，无数据泄露
-- 支持 Ollama / OpenAI / Anthropic / 本地 GGUF 多种模型
-- 工业科幻风 CLI 像操作真实设备
+### 3. 真正能干活 —— Work 模式 (CAE 工作台)
+- 本地网格划分：Gmsh 集成
+- 有限元求解：CalculiX 集成
+- 结果可视化：PyVista 支持
+- 完整 CAE 工作流：加载几何 → 网格 → 边界条件 → 求解 → 后处理
 
 ---
 
-## 独家优势
+## 三大模式
 
-- **模块化设计**：AI 聊天 + 知识检索独立运行，按需选择
-- **全局统一赛博机械主题**：工业控制台风格
-- **完全本地优先**：隐私与性能兼得
-- **流式输出**：实时响应，打字机效果
+| 模式 | 命令 | 功能 |
+|------|------|------|
+| AI 对话 | `mechforge-ai` | 智能问答、设计建议 |
+| 知识库 | `mechforge-k` | 纯原文检索、不许 AI 编造 |
+| CAE 工作台 | `mechforge-work` | 网格划分、有限元求解 |
 
 ---
 
 ## 安装方式
 
-### 方式一：pip 直接安装 (推荐)
-
-```bash
-# 从 PyPI 安装 (即将上线)
-pip install mechforge-ai
-```
-
-### 方式二：从 GitHub 安装
+### 方式一：从 GitHub 安装
 
 ```bash
 # 安装最新版本
 pip install git+https://github.com/yd5768365-hue/mechforge.git
-
-# 或安装指定版本
-pip install git+https://github.com/yd5768365-hue/mechforge.git@v0.3.0
 ```
 
-### 方式三：克隆后安装
+### 方式二：克隆后安装
 
 ```bash
 # 克隆仓库
 git clone https://github.com/yd5768365-hue/mechforge.git
 cd mechforge
 
-# 安装依赖并运行
+# 安装依赖
 pip install -e .
 
-# 启动 AI 对话模式
-mechforge-ai
-
-# 启动知识库检索模式
-mechforge-k
+# 启动三大模式
+mechforge-ai      # AI 对话模式
+mechforge-k       # 知识库检索模式
+mechforge-work    # CAE 工作台模式
 ```
 
-### 方式四：便携版 (无需安装)
+### 方式三：便携版 (无需安装)
 
 ```bash
 # 直接运行 Python 脚本
 python run_main.py      # AI 对话模式
 python run_knowledge.py # 知识库检索模式
+python run_work.py      # CAE 工作台模式
 ```
 
-### 配置
+---
+
+## CAE 工作台命令
+
+```
+/load <文件>   加载几何文件 (STEP/IGES/STL)
+/mesh [选项]   生成网格 (--size=5 --type=tet)
+/bc            设置边界条件
+/solve [类型]  求解 (static/thermal/modal)
+/show [类型]   显示结果 (vonmises/displacement)
+/export <格式> 导出 (vtk/frd/pdf)
+/status        显示状态
+/help          查看帮助
+/exit          退出
+```
+
+---
+
+## 配置
 
 编辑 `config.yaml` 或设置环境变量:
 
@@ -109,4 +124,4 @@ python run_knowledge.py # 知识库检索模式
 
 ## 版本
 
-当前版本: v0.3.0
+当前版本: v0.4.0
