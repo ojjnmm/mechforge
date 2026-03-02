@@ -6,21 +6,21 @@ MechForge Work - CAE Workbench CLI
 """
 
 import os
+import random
 import sys
 import time
-import random
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 import typer
+from rich.box import ROUNDED, SIMPLE_HEAVY
 from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
 from rich.rule import Rule
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
+from rich.table import Table
 from rich.text import Text
-from rich.box import ROUNDED, SIMPLE_HEAVY
 
 console = Console()
 
@@ -35,7 +35,7 @@ class WorkConfig:
         self.calculix_version = "2.21"
         self.pyvista_version = "0.47.1"
 
-        self.current_file: Optional[Path] = None
+        self.current_file: Path | None = None
         self.mesh_info: dict = {}
         self.solution_info: dict = {}
         self.boundary_conditions: dict = {}
@@ -52,28 +52,28 @@ config = WorkConfig()
 
 # ==================== 文件选择器 ====================
 
-def select_file_interactive() -> Optional[Path]:
+def select_file_interactive() -> Path | None:
     """交互式文件选择 (简化版数字选择)"""
     console.clear()
-    
+
     # 扫描可用文件
     file_types = ['.step', '.stp', '.iges', '.igs', '.stl', '.obj', '.brep']
     files = []
-    
+
     # 扫描当前目录
     for f in Path.cwd().iterdir():
         if f.is_file() and f.suffix.lower() in file_types:
             files.append(f)
-    
+
     # 构建选项
     console.print(Panel(
         "[bold cyan]Select Geometry File[/bold cyan]",
         border_style="cyan"
     ))
     console.print()
-    
+
     options = []
-    
+
     # 示例模型
     console.print("[bold]Demo Models:[/]")
     demos = [
@@ -84,7 +84,7 @@ def select_file_interactive() -> Optional[Path]:
     for i, (name, _) in enumerate(demos, 1):
         console.print(f"  [cyan]{i}[/]. Create demo: {name}")
         options.append(Path(f"demo_{name.lower()}.step"))
-    
+
     # 本地文件
     if files:
         console.print("\n[bold]Local Files:[/]")
@@ -92,19 +92,19 @@ def select_file_interactive() -> Optional[Path]:
             i = len(options) + 1
             console.print(f"  [cyan]{i}[/]. {f.name}")
             options.append(f)
-    
+
     console.print(f"\n  [dim]{len(options) + 1}. Cancel[/]")
     console.print()
-    
+
     # 获取用户输入
     try:
-        choice = console.input("[cyan]Select (1-{}): [/]".format(len(options) + 1))
+        choice = console.input(f"[cyan]Select (1-{len(options) + 1}): [/]")
         idx = int(choice) - 1
         if 0 <= idx < len(options):
             return options[idx]
     except (ValueError, KeyboardInterrupt):
         pass
-    
+
     return None
 
 
@@ -148,7 +148,7 @@ def print_banner():
 def print_status_panel():
     """打印状态面板"""
     model_status = config.current_file.name if config.current_file else "未加载"
-    
+
     if config.solution_info:
         step = "solved"
     elif config.mesh_info:
@@ -186,12 +186,12 @@ def print_mesh_result():
         return
 
     info = config.mesh_info
-    
+
     # 质量进度条
     quality = info.get('quality', 0.85)
     bar_len = int(quality * 20)
     bar = "█" * bar_len + "░" * (20 - bar_len)
-    
+
     result_panel = Panel(
         f"""[bold]节点数量:[/] [green]{info.get('nodes', 0):,}[/]
 [bold]单元数量:[/] [green]{info.get('elements', 0):,}[/]
@@ -212,7 +212,7 @@ def print_solution_result():
         return
 
     info = config.solution_info
-    
+
     # 应力云图 ASCII
     cloud = """
     ┌─────────────────────────────┐
@@ -223,7 +223,7 @@ def print_solution_result():
     │   [green]████████████████[yellow]████████████████[red]██[dim]···[/]   │
     │    [cyan]▓▓[green]████████████████[yellow]█████████████[red]██[cyan]▓[dim]····[/]     │
     └─────────────────────────────┘"""
-    
+
     result_panel = Panel(
         f"""[bold]求解类型:[/] {info.get('type', 'static')}
 [bold]最大位移:[/] [green]{info.get('max_disp', 'N/A')} mm[/]
@@ -248,33 +248,33 @@ def _progress_callback(progress: float, message: str, progress_obj, task_id):
 
 async def handle_mesh(mesh_size: float = 5.0, mesh_type: str = "tet"):
     """生成网格 - 使用真实 Gmsh 引擎"""
-    from mechforge_work.mesh_engine import get_engine, cleanup_engine
-    
+    from mechforge_work.mesh_engine import cleanup_engine, get_engine
+
     # 1. 弹出文件选择
     console.print("\n[cyan]📁 选择几何文件...[/]")
-    
+
     result = select_file_interactive()
-    
+
     if result is None:
         console.print("[yellow]已取消[/yellow]")
         return False
-    
+
     config.current_file = result
-    
+
     # 判断是否是示例模型
     is_demo = result.name.startswith("demo_")
-    
+
     if is_demo:
         demo_type = result.stem.replace("demo_", "")
         console.print(f"[green]✓ 创建示例模型: {demo_type}[/]")
     else:
         console.print(f"[green]✓ 已选择: {result.name}[/]")
-    
+
     # 2. 使用真实 Gmsh 引擎
-    console.print(f"\n[cyan]⚙ 启动 Gmsh 生成网格...[/]")
-    
+    console.print("\n[cyan]⚙ 启动 Gmsh 生成网格...[/]")
+
     engine = get_engine()
-    
+
     try:
         with Progress(
             SpinnerColumn(),
@@ -283,39 +283,39 @@ async def handle_mesh(mesh_size: float = 5.0, mesh_type: str = "tet"):
             console=console,
         ) as progress:
             task = progress.add_task("初始化...", total=100)
-            
+
             def callback(p, msg):
                 _progress_callback(p, msg, progress, task)
-            
+
             # 加载几何
             callback(0.1, "加载几何模型...")
-            
+
             if is_demo:
                 demo_type = result.stem.replace("demo_", "")
                 success, info = engine.create_demo_geometry(demo_type)
             else:
                 success, info = engine.load_geometry(result)
-            
+
             if not success:
                 console.print(f"[red]✗ {info}[/]")
                 return False
-            
+
             console.print(f"[dim]  几何信息: {info}[/]")
-            
+
             # 生成网格
             callback(0.2, "生成网格...")
-            
+
             mesh_result = engine.generate_mesh(
                 mesh_size=mesh_size,
                 mesh_type=mesh_type,
                 optimize=True,
                 progress_callback=callback
             )
-            
+
             if not mesh_result.success:
                 console.print(f"[red]✗ {mesh_result.error}[/]")
                 return False
-            
+
             # 更新配置
             config.mesh_info = {
                 "nodes": mesh_result.nodes,
@@ -327,20 +327,20 @@ async def handle_mesh(mesh_size: float = 5.0, mesh_type: str = "tet"):
                 "generated": True,
                 "info": mesh_result.info
             }
-        
+
         # 3. 显示结果
         console.print()
         print_mesh_result()
-        
+
         # 显示额外信息
         if mesh_result.info:
             elapsed = mesh_result.info.get("elapsed_time", 0)
             console.print(f"[dim]  耗时: {elapsed:.2f}s[/]")
             if mesh_result.mesh_file:
                 console.print(f"[dim]  网格文件: {mesh_result.mesh_file}[/]")
-        
+
         return True
-        
+
     except Exception as e:
         console.print(f"[red]网格生成失败: {e}[/]")
         import traceback
@@ -357,7 +357,7 @@ def handle_solve(analysis_type: str = "static", use_api: bool = False, api_endpo
         console.print("[red]请先生成网格 /mesh[/red]")
         return False
 
-    from mechforge_work.solver_engine import get_solver, SolveMode, BoundaryCondition
+    from mechforge_work.solver_engine import BoundaryCondition, SolveMode, get_solver
 
     solver = get_solver(api_endpoint)
 
@@ -366,14 +366,14 @@ def handle_solve(analysis_type: str = "static", use_api: bool = False, api_endpo
 
     # 决定求解模式
     if use_api and solvers.get("api"):
-        console.print(f"\n[cyan]🌐 使用 API 远程求解...[/]")
+        console.print("\n[cyan]🌐 使用 API 远程求解...[/]")
         console.print(f"[dim]  端点: {solver.api_endpoint}[/]")
         solve_mode = "api"
     elif solvers.get("local_ccx"):
-        console.print(f"\n[cyan]⚙ 启动本地 CalculiX 求解器...[/]")
+        console.print("\n[cyan]⚙ 启动本地 CalculiX 求解器...[/]")
         solve_mode = "local"
     else:
-        console.print(f"\n[yellow]⚠ CalculiX 未安装且无 API，使用模拟求解...[/]")
+        console.print("\n[yellow]⚠ CalculiX 未安装且无 API，使用模拟求解...[/]")
         solve_mode = "sim"
 
     try:
@@ -432,11 +432,11 @@ def handle_solve(analysis_type: str = "static", use_api: bool = False, api_endpo
         # 显示额外信息
         if result.info:
             if solve_mode == "api":
-                console.print(f"[green]✓ API 求解完成[/]")
+                console.print("[green]✓ API 求解完成[/]")
                 if result.info.get("job_id"):
                     console.print(f"[dim]  任务ID: {result.info['job_id']}[/]")
             elif solve_mode == "sim":
-                console.print(f"[dim]  (模拟模式)[/]")
+                console.print("[dim]  (模拟模式)[/]")
             console.print(f"[dim]  求解时间: {result.solve_time:.2f}s[/]")
 
         return True
@@ -479,7 +479,7 @@ def handle_api_status(api_endpoint: str = None):
     if solver.api_endpoint:
         status = solver.check_api_status()
         if status.get("available"):
-            console.print(f"\n[green]API 服务状态:[/]")
+            console.print("\n[green]API 服务状态:[/]")
             console.print(f"  状态: {status.get('status', 'unknown')}")
             console.print(f"  版本: {status.get('version', 'unknown')}")
             console.print(f"  队列: {status.get('queue_size', 0)} 任务")
@@ -500,7 +500,7 @@ def handle_set_api(endpoint: str):
     # 测试连接
     status = solver.check_api_status()
     if status.get("available"):
-        console.print(f"[green]✓ 连接成功[/]")
+        console.print("[green]✓ 连接成功[/]")
     else:
         console.print(f"[yellow]⚠ 无法连接: {status.get('error', 'unknown')}[/]")
 
@@ -537,7 +537,7 @@ def handle_docker_stop():
     result = stop_docker_solvers()
 
     if result.get("success"):
-        console.print(f"[green]✓ 容器已停止[/]")
+        console.print("[green]✓ 容器已停止[/]")
     else:
         console.print(f"[red]✗ 停止失败: {result.get('error', '未知错误')}[/]")
 
@@ -584,23 +584,23 @@ def handle_show(result_type: str = "vonmises"):
     if not config.solution_info.get("solved"):
         console.print("[red]请先求解 /solve[/red]")
         return
-    
-    from mechforge_work.viz_engine import get_visualizer, ASCIIViewer
-    
+
+    from mechforge_work.viz_engine import ASCIIViewer, get_visualizer
+
     viz = get_visualizer()
-    
+
     # 检查 PyVista 是否可用
     if viz.is_available():
-        console.print(f"\n[cyan]📊 启动 PyVista 可视化...[/]")
+        console.print("\n[cyan]📊 启动 PyVista 可视化...[/]")
         console.print("[dim]  (按 Q 退出可视化窗口)[/]")
-        
+
         # 获取网格文件
         mesh_file = config.mesh_info.get("mesh_file")
         if mesh_file:
             mesh_path = Path(mesh_file)
             if mesh_path.exists():
                 viz.load_mesh(mesh_path)
-        
+
         # 显示结果
         if result_type in ["vonmises", "stress"]:
             result = viz.show_stress_result()
@@ -608,20 +608,20 @@ def handle_show(result_type: str = "vonmises"):
             result = viz.show_displacement_result()
         else:
             result = viz.show_mesh()
-        
+
         if not result.success:
             console.print(f"[yellow]可视化失败: {result.error}[/]")
             console.print("[dim]  使用 ASCII 模式显示[/]")
             print_solution_result()
     else:
         # PyVista 不可用，使用 ASCII 模式
-        console.print(f"\n[yellow]PyVista 不可用，使用 ASCII 云图[/]")
+        console.print("\n[yellow]PyVista 不可用，使用 ASCII 云图[/]")
         print_solution_result()
-        
+
         # 显示额外的 ASCII 可视化
         max_stress = config.solution_info.get("max_stress", 100)
         min_stress = config.solution_info.get("min_stress", 10)
-        
+
         viewer = ASCIIViewer()
         cloud = viewer.render_stress_cloud(max_stress, min_stress)
         console.print(cloud)

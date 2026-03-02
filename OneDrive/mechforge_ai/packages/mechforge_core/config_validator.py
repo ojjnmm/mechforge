@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 MechForge Work - Configuration Validator
 
@@ -8,9 +7,9 @@ MechForge Work - Configuration Validator
 
 import os
 import sys
-from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -20,17 +19,17 @@ if sys.platform == "win32":
 class ValidationResult:
     """验证结果"""
     valid: bool
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    info: Dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    info: dict[str, Any] = field(default_factory=dict)
 
 
 class ConfigValidator:
     """配置验证器"""
 
     def __init__(self):
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def reset(self):
         """重置验证状态"""
@@ -136,8 +135,8 @@ class SolverValidator:
     """求解器验证器"""
 
     def __init__(self):
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def validate_solvers(self) -> ValidationResult:
         """验证求解器可用性"""
@@ -185,10 +184,10 @@ class SolverValidator:
 
         return False
 
-    def _check_api(self) -> Dict[str, Any]:
+    def _check_api(self) -> dict[str, Any]:
         """检查 API 可用性"""
-        import urllib.request
         import json
+        import urllib.request
 
         endpoints = [
             os.environ.get("CALCULIX_API", ""),
@@ -235,12 +234,12 @@ class MeshEngineValidator:
 
         try:
             import gmsh
-            
+
             # 获取版本
             gmsh.initialize()
             version = gmsh.option.getString("General.Version")
             gmsh.finalize()
-            
+
             info["version"] = version
             info["available"] = True
 
@@ -264,7 +263,7 @@ class MeshEngineValidator:
         )
 
 
-def check_system_requirements() -> Dict[str, Any]:
+def check_system_requirements() -> dict[str, Any]:
     """
     检查系统要求
 
@@ -331,8 +330,8 @@ def check_system_requirements() -> Dict[str, Any]:
 def print_system_check():
     """打印系统检查结果"""
     from rich.console import Console
-    from rich.table import Table
     from rich.panel import Panel
+    from rich.table import Table
 
     console = Console()
 

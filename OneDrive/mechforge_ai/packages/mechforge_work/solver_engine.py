@@ -5,17 +5,20 @@ CalculiX 求解器引擎，支持真实求解和模拟模式
 支持 API 调用和本地求解两种方式
 """
 
-import os
-import sys
-import time
 import json
-import tempfile
+import os
 import subprocess
+import sys
+import tempfile
 import threading
-from pathlib import Path
-from typing import Optional, Dict, Any, Callable, List
+import time
+import urllib.error
+import urllib.request
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -39,8 +42,8 @@ class SolveResult:
     min_stress: float = 0.0
     solve_time: float = 0.0
     error: str = ""
-    result_file: Optional[Path] = None
-    info: Dict[str, Any] = field(default_factory=dict)
+    result_file: Path | None = None
+    info: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -49,7 +52,7 @@ class BoundaryCondition:
     name: str
     bc_type: str  # "fixed", "force", "pressure", "displacement"
     target: str   # 面集名称或节点集
-    values: Dict[str, float] = field(default_factory=dict)
+    values: dict[str, float] = field(default_factory=dict)
 
 
 @dataclass
@@ -82,19 +85,19 @@ class CalculiXEngine:
             api_endpoint: API 服务端点 (可选)
         """
         self.ccx_path = self._find_ccx()
-        self.mesh_file: Optional[Path] = None
-        self.inp_file: Optional[Path] = None
+        self.mesh_file: Path | None = None
+        self.inp_file: Path | None = None
         self.api_endpoint = api_endpoint or os.environ.get("CALCULIX_API", "")
 
         # 分析配置
         self.material = MATERIALS["steel"]
-        self.boundary_conditions: List[BoundaryCondition] = []
+        self.boundary_conditions: list[BoundaryCondition] = []
         self.analysis_type = "static"
 
         # 回调
-        self._progress_callback: Optional[Callable] = None
+        self._progress_callback: Callable | None = None
 
-    def _find_ccx(self) -> Optional[str]:
+    def _find_ccx(self) -> str | None:
         """查找 CalculiX 可执行文件"""
         names = ["ccx", "ccx_2.21", "ccx_2.20", "calculix"]
 
@@ -119,8 +122,8 @@ class CalculiXEngine:
     def generate_inp(
         self,
         analysis_type: str = "static",
-        boundary_conditions: Dict = None,
-        material: Dict = None,
+        boundary_conditions: dict = None,
+        material: dict = None,
         output_path: Path = None
     ) -> Path:
         """
@@ -166,8 +169,8 @@ class CalculiXEngine:
     def _generate_inp_content(
         self,
         analysis_type: str,
-        boundary_conditions: Dict,
-        material: Dict
+        boundary_conditions: dict,
+        material: dict
     ) -> str:
         """生成 INP 文件内容"""
 
@@ -352,7 +355,7 @@ S, E
             min_stress=random.uniform(5, 20),
         )
 
-    def get_stress_field(self) -> Dict[str, Any]:
+    def get_stress_field(self) -> dict[str, Any]:
         """获取应力场数据 (用于可视化)"""
         # 这里需要从结果文件读取
         # 暂时返回模拟数据
@@ -364,7 +367,7 @@ S, E
             "min": random.uniform(5, 20),
         }
 
-    def get_displacement_field(self) -> Dict[str, Any]:
+    def get_displacement_field(self) -> dict[str, Any]:
         """获取位移场数据"""
         import random
 
@@ -421,8 +424,8 @@ S, E
         Returns:
             SolveResult: 求解结果
         """
-        import urllib.request
         import urllib.error
+        import urllib.request
 
         start_time = time.time()
 
@@ -439,7 +442,7 @@ S, E
             # 准备请求数据
             mesh_path = mesh_file or self.mesh_file
             if mesh_path and mesh_path.exists():
-                with open(mesh_path, 'r') as f:
+                with open(mesh_path) as f:
                     mesh_content = f.read()
             else:
                 mesh_content = ""
@@ -565,15 +568,15 @@ S, E
             self._progress_callback(0.0, "使用模拟求解...")
         return self.solve(analysis_type, self._progress_callback, simulation_mode=True)
 
-    def check_api_status(self) -> Dict[str, Any]:
+    def check_api_status(self) -> dict[str, Any]:
         """
         检查 API 服务状态
 
         Returns:
             包含状态信息的字典
         """
-        import urllib.request
         import urllib.error
+        import urllib.request
 
         if not self.api_endpoint:
             return {
@@ -606,7 +609,7 @@ S, E
                 "error": str(e)
             }
 
-    def get_available_solvers(self) -> Dict[str, Any]:
+    def get_available_solvers(self) -> dict[str, Any]:
         """
         获取可用求解器列表
 
@@ -622,7 +625,7 @@ S, E
             "api_endpoint": self.api_endpoint or "未配置",
         }
 
-    def discover_docker_solvers(self) -> List[Dict[str, Any]]:
+    def discover_docker_solvers(self) -> list[dict[str, Any]]:
         """
         自动发现 Docker 容器中的求解器
 
@@ -630,27 +633,27 @@ S, E
             可用求解器列表
         """
         solvers = []
-        
+
         # 常见端口
         ports = [8080, 8081, 8082, 8000, 5000]
-        
+
         for port in ports:
             try:
                 url = f"http://localhost:{port}/status"
                 req = urllib.request.Request(url, method='GET')
-                
+
                 with urllib.request.urlopen(req, timeout=2) as response:
                     result = json.loads(response.read().decode('utf-8'))
-                    
+
                     solvers.append({
                         "port": port,
                         "url": f"http://localhost:{port}",
                         "status": result.get("status", "unknown"),
                         "ccx_available": result.get("ccx_available", False),
                     })
-            except:
+            except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError, OSError):
                 pass
-        
+
         return solvers
 
     def auto_configure(self) -> str:
@@ -665,33 +668,33 @@ S, E
         if env_endpoint:
             self.api_endpoint = env_endpoint
             return env_endpoint
-        
+
         # 2. 发现 Docker 容器
         solvers = self.discover_docker_solvers()
-        
+
         if solvers:
             # 选择第一个可用的
             self.api_endpoint = solvers[0]["url"]
             return self.api_endpoint
-        
+
         # 3. 默认端口
         default_endpoints = [
             "http://localhost:8080",
             "http://localhost:8081",
             "http://host.docker.internal:8080",
         ]
-        
+
         for endpoint in default_endpoints:
             self.api_endpoint = endpoint
             status = self.check_api_status()
             if status.get("available"):
                 return endpoint
-        
+
         return ""
 
 
 # Docker 管理函数
-def start_docker_solvers() -> Dict[str, Any]:
+def start_docker_solvers() -> dict[str, Any]:
     """
     启动 Docker 求解器容器
 
@@ -699,7 +702,7 @@ def start_docker_solvers() -> Dict[str, Any]:
         启动结果
     """
     import subprocess
-    
+
     # 检查 WSL
     if sys.platform == "win32":
         try:
@@ -710,7 +713,7 @@ def start_docker_solvers() -> Dict[str, Any]:
                 text=True,
                 timeout=10
             )
-            
+
             if result.returncode != 0:
                 # 启动 Docker
                 subprocess.run(
@@ -718,7 +721,7 @@ def start_docker_solvers() -> Dict[str, Any]:
                     capture_output=True,
                     timeout=10
                 )
-            
+
             # 启动容器
             result = subprocess.run(
                 ["wsl", "bash", "-c", "cd ~/mechforge-solver && docker compose up -d"],
@@ -726,7 +729,7 @@ def start_docker_solvers() -> Dict[str, Any]:
                 text=True,
                 timeout=60
             )
-            
+
             if result.returncode == 0:
                 return {
                     "success": True,
@@ -738,7 +741,7 @@ def start_docker_solvers() -> Dict[str, Any]:
                     "success": False,
                     "error": result.stderr
                 }
-                
+
         except Exception as e:
             return {
                 "success": False,
@@ -753,7 +756,7 @@ def start_docker_solvers() -> Dict[str, Any]:
                 text=True,
                 timeout=60
             )
-            
+
             if result.returncode == 0:
                 return {
                     "success": True,
@@ -771,10 +774,10 @@ def start_docker_solvers() -> Dict[str, Any]:
             }
 
 
-def stop_docker_solvers() -> Dict[str, Any]:
+def stop_docker_solvers() -> dict[str, Any]:
     """停止 Docker 求解器容器"""
     import subprocess
-    
+
     if sys.platform == "win32":
         try:
             result = subprocess.run(
@@ -783,7 +786,7 @@ def stop_docker_solvers() -> Dict[str, Any]:
                 text=True,
                 timeout=30
             )
-            
+
             return {
                 "success": result.returncode == 0,
                 "output": result.stdout,
@@ -799,7 +802,7 @@ def stop_docker_solvers() -> Dict[str, Any]:
                 text=True,
                 timeout=30
             )
-            
+
             return {
                 "success": result.returncode == 0,
                 "output": result.stdout
@@ -809,7 +812,7 @@ def stop_docker_solvers() -> Dict[str, Any]:
 
 
 # 单例
-_solver_instance: Optional[CalculiXEngine] = None
+_solver_instance: CalculiXEngine | None = None
 
 
 def get_solver(api_endpoint: str = None) -> CalculiXEngine:
