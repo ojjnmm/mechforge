@@ -1,0 +1,66 @@
+# MechForge Solver Stack
+# 包含 CalculiX 求解器和管理服务
+
+version: '3.8'
+
+services:
+  # CalculiX 求解器 1
+  calculix-solver-1:
+    build:
+      context: ./calculix-solver
+      dockerfile: Dockerfile
+    container_name: mechforge-calcx-1
+    ports:
+      - "8081:8080"
+    volumes:
+      - solver-jobs-1:/solver/jobs
+      - solver-results-1:/solver/results
+    environment:
+      - SOLVER_NAME=calculix-1
+      - SOLVER_PORT=8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # CalculiX 求解器 2 (并行处理)
+  calculix-solver-2:
+    build:
+      context: ./calculix-solver
+      dockerfile: Dockerfile
+    container_name: mechforge-calcx-2
+    ports:
+      - "8082:8080"
+    volumes:
+      - solver-jobs-2:/solver/jobs
+      - solver-results-2:/solver/results
+    environment:
+      - SOLVER_NAME=calculix-2
+      - SOLVER_PORT=8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 求解器负载均衡器
+  solver-gateway:
+    image: nginx:alpine
+    container_name: mechforge-gateway
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - calculix-solver-1
+      - calculix-solver-2
+    restart: unless-stopped
+
+volumes:
+  solver-jobs-1:
+  solver-results-1:
+  solver-jobs-2:
+  solver-results-2:
