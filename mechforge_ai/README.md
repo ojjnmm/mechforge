@@ -12,11 +12,14 @@
   <a href="https://python.org">
     <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python"/>
   </a>
-  <a href="https://github.com/yd5768365-hue/mechforge/actions">
-    <img src="https://img.shields.io/badge/code%20quality-A+-brightgreen.svg" alt="Code Quality"/>
+  <a href="https://github.com/yd5768365-hue/mechforge/actions/workflows/ci.yml">
+    <img src="https://github.com/yd5768365-hue/mechforge/actions/workflows/ci.yml/badge.svg" alt="CI"/>
   </a>
   <a href="https://github.com/yd5768365-hue/mechforge/pkgs/container/mechforge">
-    <img src="https://img.shields.io/badge/docker-ready-blue.svg" alt="Docker"/>
+    <img src="https://img.shields.io/badge/ghcr.io-mechforge-blue.svg" alt="Docker GHCR"/>
+  </a>
+  <a href="https://github.com/yd5768365-hue/mechforge/stargazers">
+    <img src="https://img.shields.io/github/stars/yd5768365-hue/mechforge?style=social" alt="Stars"/>
   </a>
 </p>
 
@@ -96,7 +99,7 @@ pip install mechforge-ai
 pip install mechforge-ai[all]
 
 # 从源码安装
-git clone https://gitcode.com/2501_94457157/mechforge.git
+git clone https://github.com/yd5768365-hue/mechforge.git
 cd mechforge
 pip install -e ".[all]"
 ```
@@ -162,6 +165,8 @@ mechforge-web
 
 ## 📦 Docker 部署
 
+提供多种镜像变体，支持 `linux/amd64` 和 `linux/arm64` 平台。
+
 ### 快速启动
 
 ```bash
@@ -169,10 +174,13 @@ mechforge-web
 ./docker-start.sh start           # Linux/macOS
 docker-start.bat start            # Windows
 
-# 方式二：Docker Compose
+# 方式二：Docker Compose (推荐)
+git clone https://github.com/yd5768365-hue/mechforge.git
+cd mechforge
+cp .env.example .env
 docker-compose --profile full up -d
 
-# 方式三：直接拉取镜像
+# 方式三：直接拉取镜像运行
 docker pull ghcr.io/yd5768365-hue/mechforge:latest
 docker run -it --rm ghcr.io/yd5768365-hue/mechforge:latest
 ```
@@ -181,19 +189,15 @@ docker run -it --rm ghcr.io/yd5768365-hue/mechforge:latest
 
 | 镜像 | 大小 | 描述 |
 |------|------|------|
-| `ghcr.io/yd5768365-hue/mechforge:latest` | ~800MB | 完整版 |
+| `ghcr.io/yd5768365-hue/mechforge:latest` | ~800MB | 完整版（推荐） |
 | `ghcr.io/yd5768365-hue/mechforge-ai:latest` | ~200MB | AI 对话模式 |
 | `ghcr.io/yd5768365-hue/mechforge-rag:latest` | ~500MB | 知识库 RAG 模式 |
 | `ghcr.io/yd5768365-hue/mechforge-work:latest` | ~400MB | CAE 工作台模式 |
 | `ghcr.io/yd5768365-hue/mechforge-web:latest` | ~300MB | Web 服务模式 |
 
-### Docker Compose 配置
+### Docker Compose 启动模式
 
 ```bash
-# 复制环境配置
-cp .env.example .env
-
-# 启动不同模式
 docker-compose --profile ai up -d      # AI 对话
 docker-compose --profile rag up -d     # 知识库
 docker-compose --profile work up -d    # CAE 工作台
@@ -210,7 +214,7 @@ docker-compose --profile full up -d    # 完整版 (推荐)
 | `LOG_LEVEL` | `INFO` | 日志级别 |
 | `WEB_PORT` | `8080` | Web 服务端口 |
 
-详细文档请参阅 [Docker 部署指南](docs/DOCKER.md)。
+📖 详细文档请参阅 [Docker 部署指南](docs/DOCKER.md)
 
 ---
 
