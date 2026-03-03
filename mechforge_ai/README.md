@@ -3,20 +3,17 @@
 真正懂机械、敢说真话、能真算
 
 <p align="center">
-  <a href="https://github.com/yd5768365-hue/mechforge/releases">
-    <img src="https://img.shields.io/badge/version-0.5.0-blue.svg" alt="Version"/>
+  <a href="https://gitcode.com/2501_94457157/mechforge/releases">
+    <img src="https://img.shields.io/badge/version-0.4.0-blue.svg" alt="Version"/>
   </a>
-  <a href="https://github.com/yd5768365-hue/mechforge/blob/main/LICENSE">
+  <a href="https://gitcode.com/2501_94457157/mechforge/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
   </a>
   <a href="https://python.org">
     <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python"/>
   </a>
-  <a href="https://github.com/yd5768365-hue/mechforge/actions">
+  <a href="https://gitcode.com/2501_94457157/mechforge">
     <img src="https://img.shields.io/badge/code%20quality-A+-brightgreen.svg" alt="Code Quality"/>
-  </a>
-  <a href="https://github.com/yd5768365-hue/mechforge/stargazers">
-    <img src="https://img.shields.io/github/stars/yd5768365-hue/mechforge.svg" alt="Stars"/>
   </a>
 </p>
 
@@ -51,16 +48,16 @@
 - **智能切分**: 自动文档分块
 
 ### 🔧 CAE 工作台
-- **几何处理**: STEP, IGES, STL 导入
-- **网格划分**: Gmsh 集成
-- **FEA 求解**: CalculiX 集成
-- **可视化**: PyVista 3D 云图
+- **几何处理**: STEP, IGES, STL, OBJ, BREP 导入
+- **网格划分**: Gmsh 4.15+ 集成，支持四面体/六面体网格
+- **FEA 求解**: CalculiX 本地求解 + API 远程求解
+- **可视化**: PyVista 3D 云图 + ASCII 后备显示
+- **材料库**: 钢材、铝合金、铜、钛合金
 
 ### 🌐 Web 界面
 - **FastAPI**: 高性能异步后端
 - **WebSocket**: 实时双向通信
-- **响应式设计**: 支持移动端
-- **三模式集成**: AI/知识库/CAE
+- **安全中间件**: 速率限制、IP 过滤、输入验证、安全头
 
 ### 🔌 MCP 协议
 - **内置工具**: 悬臂梁计算、材料查询、弹簧设计
@@ -95,7 +92,7 @@ pip install mechforge-ai
 pip install mechforge-ai[all]
 
 # 从源码安装
-git clone https://github.com/yd5768365-hue/mechforge.git
+git clone https://gitcode.com/2501_94457157/mechforge.git
 cd mechforge
 pip install -e ".[all]"
 ```
@@ -131,13 +128,16 @@ mechforge-model list
 mechforge-model select
 
 # 启动 AI 对话
-mechforge-ai
+mechforge
 
 # 启动知识库
 mechforge-k
 
 # 启动 CAE 工作台
 mechforge-work
+
+# 启动 CAE TUI 界面
+mechforge-work --tui
 
 # 启动 Web 界面
 mechforge-web
@@ -147,9 +147,10 @@ mechforge-web
 
 | 命令 | 说明 | 示例 |
 |------|------|------|
-| `mechforge-ai` | 启动 AI 对话 | 直接运行进入交互模式 |
+| `mechforge` | 启动 AI 对话 | 直接运行进入交互模式 |
 | `mechforge-k` | 启动知识库 | `mechforge-k search "关键词"` |
 | `mechforge-work` | 启动 CAE 工作台 | `mechforge-work demo` |
+| `mechforge-work --tui` | 启动 CAE TUI 界面 | 交互式终端界面 |
 | `mechforge-web` | 启动 Web 界面 | 访问 http://localhost:8080 |
 | `mechforge-model` | 模型管理 | `mechforge-model list` |
 
@@ -160,7 +161,7 @@ mechforge-web
 ### AI 对话示例
 
 ```
-$ mechforge-ai
+$ mechforge
 
 [MechBot] > 计算一个长100mm的悬臂梁挠度，截面10x10mm，受力1000N
 
@@ -199,6 +200,16 @@ $ mechforge-work
 [显示应力云图...]
 ```
 
+### 使用 CalculiX API 远程求解
+
+```bash
+# 设置 API 端点
+[MechBot] > /api https://your-calculix-api.com
+
+# 使用 API 求解
+[MechBot] > /solve --api
+```
+
 ### Web 界面
 
 访问 http://localhost:8080 使用 Web 界面：
@@ -213,13 +224,13 @@ $ mechforge-work
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      MechForge AI v0.5.0                    │
+│                      MechForge AI v0.4.0                    │
 ├──────────────┬──────────────┬──────────────┬────────────────┤
 │  AI 对话     │  知识库      │  CAE 工作台  │  Web 界面      │
 ├──────────────┼──────────────┼──────────────┼────────────────┤
-│ LLM Client   │ RAG Engine   │ Gmsh         │ FastAPI        │
+│ LLM Client   │ RAG Engine   │ Gmsh 4.15+   │ FastAPI        │
 │ MCP Tools    │ BM25/Rerank  │ CalculiX     │ WebSocket      │
-│ Streaming    │ ChromaDB     │ PyVista      │ Jinja2         │
+│ Streaming    │ ChromaDB     │ PyVista      │ Security       │
 ├──────────────┴──────────────┴──────────────┴────────────────┤
 │              Core (Config / MCP / Local Model Manager)       │
 ├─────────────────────────────────────────────────────────────┤
@@ -237,6 +248,9 @@ pip install mechforge-ai
 
 # CAE 功能 (+Gmsh +CalculiX +PyVista)
 pip install mechforge-ai[work]
+
+# RAG 功能 (+ChromaDB +Sentence-Transformers)
+pip install mechforge-ai[rag]
 
 # Web 界面 (+FastAPI +WebSocket)
 pip install mechforge-ai[web]
@@ -262,7 +276,7 @@ pip install --force-reinstall mechforge-ai
 **Q: CAE 功能无法使用**
 ```bash
 # 检查 CAE 环境
-mechforge-work check
+python check_cae_env.py
 
 # 安装 CAE 依赖
 pip install mechforge-ai[work]
@@ -317,14 +331,36 @@ python scripts/build_package.py
 mechforge_ai/
 ├── mechforge_core/            # 核心模块
 │   ├── config.py              # Pydantic 配置
-│   ├── mcp/                   # MCP 协议实现
-│   ├── gguf_server.py         # GGUF HTTP 服务器
-│   └── local_model_manager.py
+│   ├── cache.py               # 多级缓存系统
+│   ├── database.py            # SQLite 数据库
+│   ├── logger.py               # 结构化日志
+│   ├── security.py             # 安全工具
+│   ├── mcp/                    # MCP 协议实现
+│   ├── gguf_server.py          # GGUF HTTP 服务器
+│   └── local_model_manager.py  # 本地模型管理
 ├── mechforge_ai/              # AI 对话
+│   ├── llm_client.py          # LLM 客户端
+│   ├── terminal.py            # 终端界面
+│   ├── rag_engine.py          # RAG 引擎
+│   └── model_cli.py           # 模型 CLI
 ├── mechforge_knowledge/       # 知识库
+│   ├── cli.py                 # 知识库 CLI
+│   ├── lookup.py              # 查询引擎
+│   └── rag.py                 # RAG 实现
 ├── mechforge_work/            # CAE 工作台
+│   ├── work_cli.py            # CAE CLI
+│   ├── mesh_engine.py         # Gmsh 网格引擎
+│   ├── solver_engine.py       # CalculiX 求解器
+│   ├── viz_engine.py          # PyVista 可视化
+│   └── cae_core.py            # CAE 核心
 ├── mechforge_web/             # Web 界面
+│   ├── api.py                 # API 路由
+│   ├── main.py                # FastAPI 应用
+│   ├── middleware.py          # 安全中间件
+│   └── security_config.py     # 安全配置
 ├── mechforge_theme/           # 主题组件
+│   ├── colors.py              # 颜色定义
+│   └── components.py          # UI 组件
 ├── docs/                      # 文档
 ├── tests/                     # 测试
 ├── examples/                  # 示例
@@ -343,8 +379,6 @@ mechforge_ai/
 4. 推送分支 (`git push origin feature/amazing`)
 5. 创建 Pull Request
 
-查看 [开发指南](docs/dev/contributing.md) 了解更多。
-
 ---
 
 ## 📄 许可证
@@ -361,37 +395,42 @@ mechforge_ai/
 - [Ollama](https://ollama.com/) - 本地 LLM
 - [LlamaCPP](https://github.com/ggerganov/llama.cpp) - GGUF 推理
 - [FastAPI](https://fastapi.tiangolo.com/) - Web 框架
+- [PyVista](https://pyvista.org/) - 3D 可视化
+- [Rich](https://github.com/Textualize/rich) - 终端 UI
 
 ---
 
 ## 📞 联系我们
 
-- **GitHub Issues**: [报告问题](https://github.com/yd5768365-hue/mechforge/issues)
-- **Email**: mechforge@example.com
-- **文档**: https://mechforge.ai
+- **GitCode**: https://gitcode.com/2501_94457157/mechforge
+- **GitHub**: https://github.com/yd5768365-hue/mechforge
+- **Issues**: [报告问题](https://gitcode.com/2501_94457157/mechforge/issues)
 
 ---
 
 ## 📝 更新日志
 
-### v0.5.0 (2026-03-01)
+### v0.4.0 (2026-03-02)
 
 #### ✨ 新特性
-- **Web 安全中间件**: 添加完整的 FastAPI 安全中间件栈
-  - 速率限制 (Rate Limiting)
-  - IP 过滤 (IP Filtering)
-  - 输入验证 (SQL/XSS 防护)
-  - 安全头 (Security Headers)
-  - API Token 管理
-- **核心模块增强**:
+- **CAE 工作台完整实现**
+  - Gmsh 4.15+ 集成，支持 STEP/IGES/STL/OBJ/BREP 格式
+  - CalculiX 本地求解 + API 远程求解
+  - PyVista 3D 可视化 + ASCII 后备显示
+  - 内置材料库（钢材、铝合金、铜、钛合金）
+- **Textual TUI 界面**
+  - 交互式文件选择
+  - 进度显示
+  - 结果展示
+- **三种主模式**
+  - `mechforge` - AI 对话模式
+  - `mechforge-k` - 知识库查询模式
+  - `mechforge-work` - CAE 工作台模式
+- **核心模块增强**
   - 多级缓存系统 (Memory + Disk)
-  - SQLite 数据库支持 (对话历史、知识库索引)
+  - SQLite 数据库支持
   - 结构化日志系统
-  - 懒加载优化
-- **代码质量**: 修复 756 个代码质量问题，达到 A+ 级
-  - ✅ Black 代码格式化
-  - ✅ Ruff 代码检查 (0 问题)
-  - ✅ 100% 代码质量修复完成
+  - 安全中间件栈
 
 #### 🔧 改进
 - 优化包结构和导入
@@ -399,9 +438,28 @@ mechforge_ai/
 - 改进 CAE 工作台错误处理
 - 增强 MCP 工具支持
 
-#### 📦 依赖
-- 更新 pyproject.toml 配置
-- 添加可选依赖分组 [web], [work], [rag]
+#### 🐛 修复
+- 修复 `rich.box` 导入错误
+- 修复 Pylance 导入解析问题
+
+### v0.3.0 (2025-12-15)
+
+- 知识库查询模式
+- RAG 支持
+- 多 AI 提供商支持
+- 配置管理
+
+### v0.2.0 (2025-11-01)
+
+- AI 聊天模式
+- 本地 Ollama 模型支持
+- 基础命令处理
+
+### v0.1.0 (2025-10-01)
+
+- 初始项目结构
+- 基础 CLI 框架
+- 配置系统
 
 ---
 
