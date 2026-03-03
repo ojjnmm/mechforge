@@ -3,17 +3,20 @@
 真正懂机械、敢说真话、能真算
 
 <p align="center">
-  <a href="https://gitcode.com/2501_94457157/mechforge/releases">
+  <a href="https://github.com/yd5768365-hue/mechforge/releases">
     <img src="https://img.shields.io/badge/version-0.4.0-blue.svg" alt="Version"/>
   </a>
-  <a href="https://gitcode.com/2501_94457157/mechforge/blob/main/LICENSE">
+  <a href="https://github.com/yd5768365-hue/mechforge/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
   </a>
   <a href="https://python.org">
     <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python"/>
   </a>
-  <a href="https://gitcode.com/2501_94457157/mechforge">
+  <a href="https://github.com/yd5768365-hue/mechforge/actions">
     <img src="https://img.shields.io/badge/code%20quality-A+-brightgreen.svg" alt="Code Quality"/>
+  </a>
+  <a href="https://github.com/yd5768365-hue/mechforge/pkgs/container/mechforge">
+    <img src="https://img.shields.io/badge/docker-ready-blue.svg" alt="Docker"/>
   </a>
 </p>
 
@@ -23,6 +26,7 @@
 
 - [✨ 核心特性](#-核心特性)
 - [🚀 快速开始](#-快速开始)
+  - [📦 Docker 部署](#-docker-部署)
 - [📖 使用指南](#-使用指南)
 - [🏗️ 技术架构](#-技术架构)
 - [📦 依赖分组](#-依赖分组)
@@ -153,6 +157,62 @@ mechforge-web
 | `mechforge-work --tui` | 启动 CAE TUI 界面 | 交互式终端界面 |
 | `mechforge-web` | 启动 Web 界面 | 访问 http://localhost:8080 |
 | `mechforge-model` | 模型管理 | `mechforge-model list` |
+
+---
+
+## 📦 Docker 部署
+
+### 快速启动
+
+```bash
+# 方式一：使用启动脚本
+./docker-start.sh start           # Linux/macOS
+docker-start.bat start            # Windows
+
+# 方式二：Docker Compose
+docker-compose --profile full up -d
+
+# 方式三：直接拉取镜像
+docker pull ghcr.io/yd5768365-hue/mechforge:latest
+docker run -it --rm ghcr.io/yd5768365-hue/mechforge:latest
+```
+
+### 镜像变体
+
+| 镜像 | 大小 | 描述 |
+|------|------|------|
+| `ghcr.io/yd5768365-hue/mechforge:latest` | ~800MB | 完整版 |
+| `ghcr.io/yd5768365-hue/mechforge-ai:latest` | ~200MB | AI 对话模式 |
+| `ghcr.io/yd5768365-hue/mechforge-rag:latest` | ~500MB | 知识库 RAG 模式 |
+| `ghcr.io/yd5768365-hue/mechforge-work:latest` | ~400MB | CAE 工作台模式 |
+| `ghcr.io/yd5768365-hue/mechforge-web:latest` | ~300MB | Web 服务模式 |
+
+### Docker Compose 配置
+
+```bash
+# 复制环境配置
+cp .env.example .env
+
+# 启动不同模式
+docker-compose --profile ai up -d      # AI 对话
+docker-compose --profile rag up -d     # 知识库
+docker-compose --profile work up -d    # CAE 工作台
+docker-compose --profile web up -d     # Web 服务
+docker-compose --profile full up -d    # 完整版 (推荐)
+```
+
+### 环境变量
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `OLLAMA_URL` | `http://ollama:11434` | Ollama 服务地址 |
+| `OLLAMA_MODEL` | `qwen2.5:1.5b` | 默认使用的模型 |
+| `LOG_LEVEL` | `INFO` | 日志级别 |
+| `WEB_PORT` | `8080` | Web 服务端口 |
+
+详细文档请参阅 [Docker 部署指南](docs/DOCKER.md)。
+
+---
 
 ---
 
@@ -402,17 +462,23 @@ mechforge_ai/
 
 ## 📞 联系我们
 
-- **GitCode**: https://gitcode.com/2501_94457157/mechforge
-- **GitHub**: https://github.com/yd5768365-hue/mechforge
-- **Issues**: [报告问题](https://gitcode.com/2501_94457157/mechforge/issues)
+- **GitHub**: https://github.com/yd5768365-hue/mechforge (主仓库)
+- **GitCode**: https://gitcode.com/2501_94457157/mechforge (镜像仓库)
+- **Issues**: [报告问题](https://github.com/yd5768365-hue/mechforge/issues)
+- **Discussions**: [讨论区](https://github.com/yd5768365-hue/mechforge/discussions)
 
 ---
 
 ## 📝 更新日志
 
-### v0.4.0 (2026-03-02)
+### v0.4.0 (2026-03-03)
 
 #### ✨ 新特性
+- **Docker 支持**
+  - 多阶段构建 Dockerfile，支持 5 种镜像变体
+  - Docker Compose 配置，一键部署完整服务
+  - 自动镜像构建推送到 Docker Hub 和 GHCR
+  - 快速启动脚本 (Linux/macOS/Windows)
 - **CAE 工作台完整实现**
   - Gmsh 4.15+ 集成，支持 STEP/IGES/STL/OBJ/BREP 格式
   - CalculiX 本地求解 + API 远程求解
@@ -437,6 +503,7 @@ mechforge_ai/
 - 统一本地模型管理 (Ollama + GGUF)
 - 改进 CAE 工作台错误处理
 - 增强 MCP 工具支持
+- GitHub Actions 自动同步到 GitCode
 
 #### 🐛 修复
 - 修复 `rich.box` 导入错误
