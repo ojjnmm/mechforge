@@ -49,8 +49,10 @@
 - **对话历史**: 持久化存储
 
 ### 📚 知识库检索
+- **多后端支持**: 本地引擎 / RAGFlow API
 - **RAG 引擎**: 向量检索 + BM25 + 重排序
-- **多格式支持**: Markdown, PDF, TXT
+- **多格式支持**: Markdown, PDF, TXT, Word, 图片
+- **高级解析**: OCR 文字识别、表格提取、版面分析（RAGFlow）
 - **原文呈现**: 杜绝 AI 幻觉
 - **智能切分**: 自动文档分块
 
@@ -218,8 +220,6 @@ docker-compose --profile full up -d    # 完整版 (推荐)
 
 ---
 
----
-
 ## 📖 使用指南
 
 ### AI 对话示例
@@ -227,7 +227,7 @@ docker-compose --profile full up -d    # 完整版 (推荐)
 ```
 $ mechforge
 
-[MechBot] > 计算一个长100mm的悬臂梁挠度，截面10x10mm，受力1000N
+[MechForge] > 计算一个长100mm的悬臂梁挠度，截面10x10mm，受力1000N
 
 AI: 我来为您计算这个悬臂梁的挠度...
 
@@ -243,6 +243,146 @@ AI: 我来为您计算这个悬臂梁的挠度...
 - E = 210000 MPa (钢材)
 - I = 833.33 mm⁴
 ```
+
+---
+
+## 📚 知识库高级配置
+
+### 后端选择
+
+MechForge AI 支持两种知识库后端：
+
+| 后端 | 特点 | 适用场景 |
+|------|------|----------|
+| `local` | 轻量级，无需外部服务 | Markdown/TXT 文档，快速部署 |
+| `ragflow` | 高级文档解析能力 | PDF/图片/表格，OCR 需求 |
+
+### 配置方式
+
+编辑 `config.yaml`：
+
+```yaml
+knowledge:
+  # 选择后端: local | ragflow
+  backend: "local"
+
+  # 本地后端配置
+  path: "./knowledge"
+
+  # RAGFlow 后端配置（当 backend: ragflow 时生效）
+  ragflow:
+    url: "http://localhost:9380"
+    api_key: "your-api-key"
+    kb_id: "your-kb-id"
+```
+
+---
+
+### 🔧 RAGFlow 集成指南
+
+RAGFlow 是一个开源的 RAG 引擎，提供高级文档解析能力：
+
+- **OCR 文字识别**: 支持扫描件、图片 PDF
+- **表格提取**: 自动识别表格结构
+- **版面分析**: 智能识别标题、段落、图片
+- **多格式支持**: PDF、Word、PPT、Excel、图片
+
+#### Step 1: 部署 RAGFlow
+
+```bash
+# 克隆 RAGFlow 仓库
+git clone https://github.com/infiniflow/ragflow.git
+cd ragflow/docker
+
+# 修改 .env（可选，使用稳定版本）
+echo "RAGFLOW_IMAGE=infiniflow/ragflow:v0.15.0" > .env
+
+# 启动服务（CPU 版本）
+docker compose -f docker-compose.yml up -d
+
+# 或使用 GPU 版本
+# docker compose -f docker-compose-gpu.yml up -d
+```
+
+启动后访问 http://localhost:9380，默认账号 `ragflow` / `infiniflow`。
+
+#### Step 2: 创建知识库
+
+1. 登录 RAGFlow 界面
+2. 点击 **Knowledge Base** → **Create Knowledge Base**
+3. 输入知识库名称（如 `mechanical`）
+4. 选择解析方法：
+   - **General**: 通用文档
+   - **Manual**: 手册类文档
+   - **Law**: 法律法规
+   - **Paper**: 学术论文
+   - **Book**: 书籍
+   - **Table**: 表格类文档
+5. 上传文档并等待解析完成
+
+#### Step 3: 获取 API 凭证
+
+1. 点击右上角 **Settings** → **API Keys**
+2. 创建新的 API Key
+3. 记录 **API Key** 和 **Knowledge Base ID**
+
+#### Step 4: 配置 MechForge AI
+
+编辑 `config.yaml`：
+
+```yaml
+knowledge:
+  backend: "ragflow"
+  ragflow:
+    url: "http://localhost:9380"
+    api_key: "ragflow-xxxxxxxxxxxx"
+    kb_id: "kb_xxxxxxxxxxxx"
+```
+
+#### Step 5: 使用知识库
+
+```python
+from mechforge_knowledge import get_backend_from_config
+
+# 获取配置的后端
+backend = get_backend_from_config()
+
+# 检查健康状态
+is_healthy = await backend.health_check()
+
+# 检索知识库
+results = await backend.search("轴承选型方法", top_k=5)
+for result in results:
+    print(f"来源: {result.source}")
+    print(f"内容: {result.content}")
+    print(f"相关度: {result.score}")
+```
+
+#### RAGFlow 常见问题
+
+**Q: RAGFlow 启动失败**
+```bash
+# 检查端口占用
+netstat -tlnp | grep 9380
+
+# 查看日志
+docker logs ragflow-server
+
+# 重启服务
+docker compose restart
+```
+
+**Q: 文档解析慢**
+- 使用 GPU 版本可加速 OCR
+- 减少并发解析任务数
+- 选择合适的解析方法
+
+**Q: 检索结果不准确**
+- 调整 `top_k` 参数
+- 尝试不同的解析方法
+- 检查文档分块是否合理
+
+---
 
 ### CAE 分析示例
 
@@ -475,7 +615,7 @@ mechforge_ai/
 
 ## 📝 更新日志
 
-### v0.4.0 (2026-03-03)
+### v0.4.0 (2026-03-05)
 
 #### ✨ 新特性
 - **Docker 支持**
@@ -488,6 +628,11 @@ mechforge_ai/
   - CalculiX 本地求解 + API 远程求解
   - PyVista 3D 可视化 + ASCII 后备显示
   - 内置材料库（钢材、铝合金、铜、钛合金）
+- **知识库后端架构**
+  - 统一的 `KnowledgeBackend` 抽象接口
+  - `LocalBackend`: 本地 ChromaDB + BM25 实现
+  - `RAGFlowBackend`: RAGFlow API 集成，支持 OCR、表格提取
+  - 配置文件支持后端切换
 - **Textual TUI 界面**
   - 交互式文件选择
   - 进度显示
@@ -508,9 +653,13 @@ mechforge_ai/
 - 改进 CAE 工作台错误处理
 - 增强 MCP 工具支持
 - GitHub Actions 自动同步到 GitCode
+- 修复 AI 模式提示符颜色渲染问题
+- 优化启动界面分隔线
 
 #### 🐛 修复
 - 修复 `rich.box` 导入错误
+- 修复 Pylance 导入解析问题
+- 修复打包配置路径问题
 - 修复 Pylance 导入解析问题
 
 ### v0.3.0 (2025-12-15)
@@ -534,6 +683,48 @@ mechforge_ai/
 
 ---
 
+## 🚀 后续开发目标
+
+### v0.5.0 (计划中)
+
+- **知识库增强**
+  - 持续积累机械工程专业知识
+  - 集成更多专业文档和标准规范
+  - 优化检索精度和响应速度
+- **CAE 功能扩展**
+  - 更多求解器支持
+  - 参数化建模
+  - 结果后处理增强
+- **用户体验优化**
+  - Web 界面重构
+  - 移动端适配
+  - 多语言支持
+
+### v0.6.0 (敬请期待)
+
+> 🎯 **知识驱动，智能进化**
+
+v0.6.0 将是一个重要里程碑，核心目标是构建一个**持续学习、不断进化**的机械工程知识库系统。
+
+**核心特性**：
+- 📚 **知识库持续扩充**: 每日更新机械设计、制造工艺、材料科学等领域知识
+- 🧠 **智能问答升级**: 基于知识库的精准问答，拒绝 AI 幻觉
+- 🔧 **专业工具集成**: 更多工程计算工具，覆盖设计全流程
+- 📊 **案例库建设**: 真实工程案例，助力设计决策
+
+**知识库建设计划**：
+- 机械设计手册（轴承、齿轮、紧固件等）
+- 材料性能数据库
+- 公差配合查询
+- 标准件选型指南
+- 常见问题解决方案
+
+---
+
 <p align="center">
   Made with ❤️ for Mechanical Engineers
+</p>
+
+<p align="center">
+  <b>v0.6.0 敬请期待</b> 🚀
 </p>
