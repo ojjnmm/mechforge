@@ -4,8 +4,9 @@
 
 import os
 
-from mechforge_core.config import reload_config, save_config
 from rich.console import Console
+
+from mechforge_core.config import reload_config, save_config
 
 console = Console()
 
@@ -35,11 +36,22 @@ class CommandHandler:
 
         # 状态
         if cmd == "/status":
+            # 获取知识库路径（不触发 RAG 引擎加载）
+            kb_path = None
+            if terminal.rag_enabled:
+                kb_path = terminal.rag_engine.knowledge_path
+            else:
+                from pathlib import Path
+
+                config_path = Path(terminal.config.knowledge.path)
+                if config_path.exists():
+                    kb_path = config_path
+
             terminal.ui.print_dashboard(
                 api_type=terminal.llm.get_api_type(),
                 model_name=terminal.llm.get_current_model_name(),
                 rag_enabled=terminal.rag_enabled,
-                kb_path=terminal.rag_engine.knowledge_path,
+                kb_path=kb_path,
                 top_k=self.config.knowledge.rag.top_k,
                 msg_count=len(terminal.conversation_history),
             )
@@ -47,12 +59,23 @@ class CommandHandler:
 
         # 会话信息
         if cmd == "/info":
+            # 获取知识库路径（不触发 RAG 引擎加载）
+            kb_path = None
+            if terminal.rag_enabled:
+                kb_path = terminal.rag_engine.knowledge_path
+            else:
+                from pathlib import Path
+
+                config_path = Path(terminal.config.knowledge.path)
+                if config_path.exists():
+                    kb_path = config_path
+
             terminal.ui.print_session_info(
                 conversation_count=len(terminal.conversation_history),
                 command_count=len(terminal.command_history),
                 rag_enabled=terminal.rag_enabled,
                 provider=self.config.get_active_provider(),
-                kb_path=terminal.rag_engine.knowledge_path,
+                kb_path=kb_path,
             )
             return False
 
@@ -86,6 +109,7 @@ class CommandHandler:
 
     def _handle_rag(self, terminal):
         """处理 RAG 命令"""
+        # 检查知识库是否可用（延迟加载）
         if not terminal.rag_engine.is_available:
             print("✗ 未找到知识库")
             return
@@ -101,13 +125,26 @@ class CommandHandler:
         """重新加载配置"""
         terminal.config = reload_config()
         terminal.rag_enabled = terminal.config.knowledge.rag.enabled
-        terminal.rag_engine = terminal._create_rag_engine()
+        # 重置 RAG 引擎（延迟加载）
+        terminal._rag_engine = None
         print("✓ 配置已重新加载")
+
+        # 获取知识库路径（不触发 RAG 引擎加载）
+        kb_path = None
+        if terminal.rag_enabled:
+            kb_path = terminal.rag_engine.knowledge_path
+        else:
+            from pathlib import Path
+
+            config_path = Path(terminal.config.knowledge.path)
+            if config_path.exists():
+                kb_path = config_path
+
         terminal.ui.print_dashboard(
             api_type=terminal.llm.get_api_type(),
             model_name=terminal.llm.get_current_model_name(),
             rag_enabled=terminal.rag_enabled,
-            kb_path=terminal.rag_engine.knowledge_path,
+            kb_path=kb_path,
             top_k=self.config.knowledge.rag.top_k,
             msg_count=len(terminal.conversation_history),
         )

@@ -165,7 +165,7 @@ if setup_security_middleware:
             burst_size=20,
         ),
         enable_cors=True,
-        cors_origins=["http://localhost:8080", "http://127.0.0.1:8080"],
+        cors_origins=["http://localhost:8765", "http://127.0.0.1:8765", "http://localhost:8080", "http://127.0.0.1:8080"],
     )
     logger.info("Security middleware enabled")
 else:
@@ -668,25 +668,32 @@ async def get_user_sessions(
 
 def main():
     """启动 Web 服务器"""
+    import argparse
+
     import uvicorn
 
-    print("""
+    parser = argparse.ArgumentParser(description="MechForge Web Server")
+    parser.add_argument("--host", default="127.0.0.1", help="绑定地址")
+    parser.add_argument("--port", type=int, default=8765, help="端口号 (默认: 8765)")
+    parser.add_argument("--reload", action="store_true", help="开发模式热重载")
+    args = parser.parse_args()
+
+    print(f"""
     ===========================================
 
        MechForge Web Server
 
-       Visit: http://localhost:8080
-       API Docs: http://localhost:8080/docs
+       Visit: http://{args.host}:{args.port}
+       API Docs: http://{args.host}:{args.port}/docs
 
     ===========================================
     """)
 
     uvicorn.run(
         "mechforge_web.main:app",
-        host="0.0.0.0",
-        port=8080,
-        reload=True,
-        log_level="info",
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
     )
 
 

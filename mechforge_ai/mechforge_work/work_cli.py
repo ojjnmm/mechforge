@@ -13,7 +13,7 @@ import contextlib
 from pathlib import Path
 
 import typer
-from rich.box import box
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -48,29 +48,8 @@ def print_banner():
 ██║ ╚═╝ ██║███████╗╚██████╗██║  ██║██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗
 ╚═╝     ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝[/cyan]"""
 
-    robot = Panel(
-        """[bold red]╔═╦═╗
-╠╣o o╠╣
-╚╡▄▄▄╞╝
- ╔╩═══╩╗
- ║ CAE ║╾
- ╚╦═══╦╝
- ╔╩╗ ╔╩╗
- ╚═╝ ╚═╝[/bold red]
-
-[green]✓ 就绪[/green]""",
-        title="[bold red]🔧 MechBot[/bold red]",
-        border_style="red",
-        box=box.ROUNDED,
-        padding=(0, 1),
-    )
-
     console.print()
-    table = Table(show_header=False, box=None, padding=0)
-    table.add_column(width=75, no_wrap=True)
-    table.add_column(width=18, no_wrap=True)
-    table.add_row(logo, robot)
-    console.print(table)
+    console.print(logo)
     console.print(
         Rule("[bold cyan]Work Mode - Gmsh + CalculiX Workbench", style="cyan"),
         style="cyan",
@@ -571,7 +550,7 @@ def interactive_mode():
 
     while True:
         try:
-            user_input = console.input("[spring_green3][MechBot] >[/spring_green3] ").strip()
+            user_input = console.input("[spring_green3][MechForge] >[/spring_green3] ").strip()
 
             if not user_input:
                 continue
@@ -654,12 +633,21 @@ def interactive_mode():
 # ==================== Typer CLI 命令 ====================
 
 
-@app.callback()
-def main(version: bool = typer.Option(False, "--version", "-v", help="显示版本")):
+@app.callback(invoke_without_command=True)
+def main(
+    ctx: typer.Context,
+    version: bool = typer.Option(False, "--version", "-v", help="显示版本"),
+):
     """MechForge CAE Workbench"""
     if version:
         console.print("[cyan]MechForge Work v0.4.0[/cyan]")
         raise typer.Exit()
+
+    # 如果没有指定子命令，运行 demo
+    if ctx.invoked_subcommand is None:
+        print_banner()
+        handle_demo()
+        interactive_mode()
 
 
 @app.command()

@@ -191,7 +191,7 @@ def show_category_menu(knowledge_dir: Path) -> str | None:
         Panel(
             "[bold]知识库分类[/bold]\n"
             + "\n".join(
-                f"  {i+1}. {cat} ({len(docs)} 篇)"
+                f"  {i + 1}. {cat} ({len(docs)} 篇)"
                 for i, (cat, docs) in enumerate(categories.items())
             ),
             title="📚 查阅模式",
@@ -282,7 +282,7 @@ def _show_doc_list(knowledge_dir: Path) -> None:
 
     for i, doc in enumerate(docs, 1):
         size = len(doc["content"])
-        size_str = f"{size/1024:.1f}KB" if size > 1024 else f"{size}B"
+        size_str = f"{size / 1024:.1f}KB" if size > 1024 else f"{size}B"
         table.add_row(str(i), doc["title"], size_str)
 
     console.print(table)

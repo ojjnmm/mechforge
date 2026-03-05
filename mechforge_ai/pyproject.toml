@@ -128,6 +128,8 @@ extend-exclude = '''
 [tool.ruff]
 target-version = "py310"
 line-length = 100
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "F",   # Pyflakes
@@ -145,11 +147,16 @@ ignore = [
     "N801",  # Class naming (log_performance is intentional decorator-style)
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Unused imports in __init__ files
+"examples/*" = ["N806", "E741"]  # Allow physics variable names in examples
+"demo_*.py" = ["F401"]  # Allow import checks in demo files
+"test_*.py" = ["F401", "E722", "F811"]  # Allow test-specific patterns
+"run_*.py" = ["E402", "F401"]  # Allow script-style imports
+"fix_*.py" = ["E741"]  # Allow legacy variable names in fix scripts
 
 # ========== MyPy 配置 ==========
 [tool.mypy]

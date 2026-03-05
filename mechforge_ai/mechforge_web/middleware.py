@@ -15,6 +15,9 @@ from collections.abc import Callable
 
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import ASGIApp
+
 from mechforge_core import get_logger
 from mechforge_core.security import (
     InputValidator,
@@ -23,8 +26,6 @@ from mechforge_core.security import (
     RateLimiter,
     create_security_headers,
 )
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.types import ASGIApp
 
 logger = get_logger("web.security")
 

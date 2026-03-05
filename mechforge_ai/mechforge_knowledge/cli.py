@@ -149,11 +149,11 @@ def print_result(result: dict, index: int):
     matches = result.get("matches", [])
     content = result.get("content", "")
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"[{index}] {title}")
     if filename:
         print(f"    文件: {filename}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     # 显示匹配的内容
     if matches:
@@ -190,31 +190,7 @@ def print_banner(doc_count: int = 0):
 ██║ ╚═╝ ██║███████╗╚██████╗██║  ██║██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗
 ╚═╝     ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝[/cyan]"""
 
-    # 机器人 Panel
-    robot = Panel(
-        """[bold red]╔═╦═╗
-╠╣o o╠╣
-╚╡▄▄▄╞╝
- ╔╩═══╩╗
- ║ CAE ║╾
- ╚╦═══╦╝
- ╔╩╗ ╔╩╗
- ╚═╝ ╚═╝[/bold red]
-
-[green]✓ 就绪[/green]""",
-        title="[bold red]📚 MechBot[/bold red]",
-        border_style="red",
-        box=box.ROUNDED,
-        padding=(0, 1),
-    )
-
-    # 使用 Table 并排显示
-    table = Table(show_header=False, box=None, padding=0)
-    table.add_column(width=75, no_wrap=True)
-    table.add_column(width=18, no_wrap=True)
-    table.add_row(logo, robot)
-
-    console.print(table)
+    console.print(logo)
 
     # 使用 Rich Rule 添加分隔线
     console.print(Rule("[bold cyan]Knowledge Base Ready", style="cyan"), style="cyan")
@@ -275,7 +251,7 @@ def main():
 
     while True:
         try:
-            query = console.input("[spring_green3][MechBot] >[/spring_green3] ").strip()
+            query = console.input("[spring_green3][MechForge] >[/spring_green3] ").strip()
 
             if not query:
                 continue
@@ -289,7 +265,7 @@ def main():
                 print("\n--- 文档列表 ---")
                 for i, doc in enumerate(docs, 1):
                     size = len(doc["content"])
-                    size_str = f"{size/1024:.1f}KB" if size > 1024 else f"{size}B"
+                    size_str = f"{size / 1024:.1f}KB" if size > 1024 else f"{size}B"
                     print(f"  {i:2d}. {doc['title']:<40} {size_str}")
                 print()
                 continue

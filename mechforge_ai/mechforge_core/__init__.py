@@ -41,6 +41,7 @@ from mechforge_core.security import (
     APITokenManager,
     InputValidator,
     IPFilter,
+    RateLimitConfig,
     RateLimiter,
     SecurityMiddleware,
     get_security_middleware,
@@ -80,6 +81,7 @@ __all__ = [
     "set_session_id",
     # Security
     "RateLimiter",
+    "RateLimitConfig",
     "IPFilter",
     "InputValidator",
     "APITokenManager",

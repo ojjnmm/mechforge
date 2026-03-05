@@ -10,13 +10,25 @@ RAG 引擎模块 - 多路召回 + 重排序
 """
 
 import hashlib
+import logging
+import os
 import pickle
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import numpy as np
+
 from mechforge_core.config import get_config
+
+# 抑制 HuggingFace 警告
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
+
+# 抑制 sentence-transformers 日志
+logging.getLogger("sentence_transformers").setLevel(logging.ERROR)
+logging.getLogger("transformers").setLevel(logging.ERROR)
 
 
 @dataclass
@@ -406,9 +418,15 @@ class RAGEngine:
             embedding_model = None
             if self.config.knowledge.rag.embedding_model:
                 try:
-                    from sentence_transformers import SentenceTransformer
+                    import warnings
 
-                    embedding_model = SentenceTransformer(self.config.knowledge.rag.embedding_model)
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        from sentence_transformers import SentenceTransformer
+
+                        embedding_model = SentenceTransformer(
+                            self.config.knowledge.rag.embedding_model
+                        )
                 except Exception:
                     pass
             self.vector_retriever = VectorRetriever(self.documents, embedding_model)

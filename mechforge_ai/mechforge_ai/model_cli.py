@@ -160,6 +160,7 @@ def cmd_select(args):
 def cmd_test(args):
     """测试模型连接"""
     import requests
+
     from mechforge_core.local_model_manager import LocalModelManager
 
     manager = LocalModelManager()

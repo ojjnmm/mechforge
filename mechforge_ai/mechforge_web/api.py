@@ -7,11 +7,12 @@ RESTful API + WebSocket 支持
 import uuid
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel
+
 from mechforge_ai.llm_client import LLMClient
 from mechforge_ai.rag_engine import RAGEngine
 from mechforge_core.config import get_config
 from mechforge_work.cae_core import CAEEngine
-from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -326,7 +327,8 @@ async def generate_cae_mesh(request: CAEMeshRequest):
             raise HTTPException(status_code=400, detail="请先加载几何模型")
 
         mesh = engine.generate_mesh(
-            mesh_size=request.size, mesh_type=request.mesh_type  # type: ignore
+            mesh_size=request.size,
+            mesh_type=request.mesh_type,  # type: ignore
         )
 
         return {

@@ -10,6 +10,7 @@ MechForge Web - FastAPI Security Dependencies
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
 from mechforge_core import get_logger
 from mechforge_core.security import APITokenManager, SecurityMiddleware
 

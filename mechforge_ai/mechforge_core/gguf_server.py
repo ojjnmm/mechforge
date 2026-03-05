@@ -221,9 +221,9 @@ class GGUFModelServer:
 
                 def chat_stream():
                     for chunk in self.chat(messages, max_tokens, temperature, stream=True):
-                        yield json.dumps(
-                            {"message": {"role": "assistant", "content": chunk}}
-                        ) + "\n"
+                        yield (
+                            json.dumps({"message": {"role": "assistant", "content": chunk}}) + "\n"
+                        )
 
                     # 发送完成标记
                     yield json.dumps({"done": True}) + "\n"
