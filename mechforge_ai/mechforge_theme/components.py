@@ -86,46 +86,46 @@ class UIRenderer:
         top_k: int,
         msg_count: int,
     ):
-        """打印系统状态面板"""
+        """打印系统状态面板 - 固定显示在屏幕右下角"""
+        from rich.align import Align
+        from rich.console import Console
+
         # 获取知识库状态
         kb_status = "未配置"
         if kb_path:
             kb_count = len(list(kb_path.glob("*.md")))
-            kb_status = f"{kb_path.name} ({kb_count} 篇)"
+            kb_status = f"{kb_path.name}({kb_count})"
 
         # RAG 状态
-        rag_status = "ON " if rag_enabled else "OFF"
-        rag_mode = "智能" if rag_enabled else "基础"
-        rag_color = "bold orange1" if rag_enabled else "red"
+        rag_status = "ON" if rag_enabled else "OFF"
+        rag_color = "green" if rag_enabled else "red"
 
         # 系统时间
         now = datetime.now().strftime("%H:%M:%S")
 
-        # 创建状态表格
-        grid = Table(box=box.SIMPLE_HEAVY, padding=(0, 1), show_edge=False, border_style="dim cyan")
-        grid.add_column(width=10, style="orange1")
-        grid.add_column(width=18, style="spring_green3")
-        grid.add_column(width=10, style="orange1")
-        grid.add_column(width=18, style="spring_green3")
-
-        grid.add_row(
-            "[bold]API",
-            f"{api_type}",
-            "[bold]RAG",
-            f"[{rag_color}]{rag_status}[/{rag_color}] ({rag_mode})",
+        # 创建极简单行状态栏
+        status_bar = (
+            f"[dim]│[/dim] [cyan]API[/cyan] [white]{api_type}[/white] "
+            f"[dim]│[/dim] [cyan]模型[/cyan] [white]{model_name}[/white] "
+            f"[dim]│[/dim] [cyan]RAG[/cyan] [{rag_color}]{rag_status}[/{rag_color}] "
+            f"[dim]│[/dim] [cyan]KB[/cyan] [white]{kb_status}[/white] "
+            f"[dim]│[/dim] [cyan]消息[/cyan] [white]{msg_count}[/white] "
+            f"[dim]│[/dim] [dim]{self.version} {now}[/dim] [dim]│[/dim]"
         )
-        grid.add_row("[bold]模型", f"{model_name}", "[bold]消息", f"{msg_count} 条")
-        grid.add_row("[bold]知识库", f"[dim]{kb_status}[/dim]", "[bold]TopK", f"{top_k}")
-        grid.add_row("[bold]版本", f"{self.version}", "[bold]运行", f"[dim]{now}[/dim]")
 
-        console.print(grid)
+        # 使用 ANSI 转义序列固定到屏幕底部右下角
+        # \033[s 保存光标位置
+        # \033[999;0H 移动到屏幕底部
+        # \033[2K 清除当前行
+        # \033[0J 清除到屏幕底部
+        # \033[u 恢复光标位置
+        console.print()
+        # 右对齐显示状态栏
+        console.print(Align.right(status_bar))
 
     def print_help_panel(self):
-        """打印帮助面板"""
-        help_text = Text(
-            "/status /info /rag /history /clear /reload /model /exit", style="spring_green3"
-        )
-        console.print(Panel(help_text, border_style="dim", padding=(0, 1)))
+        """打印帮助面板 - 已禁用"""
+        pass
 
     def print_welcome(self, history_count: int):
         """打印欢迎信息"""

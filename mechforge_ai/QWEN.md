@@ -283,6 +283,15 @@ mechforge-web --port 8081
 - `config.yaml` - 配置文件示例
 - `.env.example` - 环境变量模板
 
+Always run tests or verify the application starts before claiming a task is complete. Never claim completion without verification.
+
+When user reports an error, read the actual error logs first before proposing solutions. Do not assume the cause.
+
+For GUI/Flet code: test that the app launches successfully before submitting changes. Common issues include incorrect icon names, alignment properties, and Card API usage.
+
+After moving or restructuring packages, always verify imports work by running a quick import test or the application entry point.
+
+When creating or modifying Python files, ensure all new exports are added to __init__.py if they need to be importable from the package root.
 
 ## Qwen Added Memories
 - 每次完成任务后记录 MechForge AI 开发日志到 DEV_LOG.md。格式示例：
@@ -295,3 +304,8 @@ mechforge-web --port 8081
   1. 将 RAG 引擎改为延迟加载（使用 `@property` 属性）
   2. 添加环境变量抑制 HF 警告
 - **解决效果**：启动速度提升，不再显示警告信息
+
+-Before marking this task complete, run the tests and verify the application starts without errors.
+-I'm getting an error. Please read the error log/output first, then diagnose the actual cause before proposing a fix.
+-Make this change incrementally - modify one file, verify it works, then move to the next. Test after each step.
+-This change is working well. Please commit it with a descriptive message before we continue.
