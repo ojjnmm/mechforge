@@ -171,13 +171,26 @@ class RAGConfig(BaseModel):
     rerank_model: str | None = Field(default=None, description="重排序模型（None 表示使用默认）")
 
 
+class RAGFlowConfig(BaseModel):
+    """RAGFlow 后端配置"""
+
+    model_config = ConfigDict(frozen=False)
+
+    url: str = Field(default="http://localhost:9380", description="RAGFlow 服务地址")
+    api_key: str = Field(default="", description="API 密钥")
+    kb_id: str = Field(default="", description="知识库 ID")
+    timeout: int = Field(default=300, description="请求超时时间（秒）")
+
+
 class KnowledgeConfig(BaseModel):
     """知识库配置"""
 
     model_config = ConfigDict(frozen=False)
 
+    backend: Literal["local", "ragflow"] = Field(default="local", description="知识库后端类型")
     path: Path = Field(default=Path("./knowledge"), description="知识库目录")
     rag: RAGConfig = Field(default_factory=RAGConfig)
+    ragflow: RAGFlowConfig = Field(default_factory=RAGFlowConfig)
     auto_reload: bool = Field(default=True, description="知识库变更时自动重载")
     file_extensions: list[str] = Field(
         default=[".md", ".txt", ".pdf"], description="支持的文件扩展名"

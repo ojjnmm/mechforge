@@ -35,7 +35,12 @@ provider:
 
 # 知识库配置
 knowledge:
-  # 知识库目录
+  # 知识库后端: local | ragflow
+  # - local: 本地 ChromaDB + BM25 实现（默认，无需外部服务）
+  # - ragflow: RAGFlow API 后端（高级文档解析：OCR、表格提取等）
+  backend: "local"
+
+  # 知识库目录（local 后端使用）
   path: "./knowledge"
 
   # RAG 配置
@@ -45,6 +50,13 @@ knowledge:
     cache_dir: ".cache/rag"
     # 嵌入模型
     embedding_model: "all-MiniLM-L6-v2"
+
+  # RAGFlow 配置（ragflow 后端使用）
+  ragflow:
+    url: "http://localhost:9380"
+    api_key: ""  # 从 RAGFlow 设置页面获取
+    kb_id: ""    # 知识库 ID
+    timeout: 300
 
 # MCP 服务器配置
 mcp:

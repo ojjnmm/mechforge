@@ -34,6 +34,22 @@
 
 ---
 
+### 问题4：集成 RAGFlow 高级文档解析能力
+- **发现者**：小夏
+- **问题描述**：现有知识库功能仅支持基础的 Markdown/TXT/PDF 文档处理，缺乏 OCR、表格提取、版面分析等高级能力
+- **解决方法**：
+  1. 设计统一的知识库后端接口 `KnowledgeBackend`，支持多种后端实现
+  2. 实现 `LocalBackend`：封装现有的 ChromaDB + BM25 本地实现
+  3. 实现 `RAGFlowBackend`：通过 API 调用 RAGFlow 服务，获得高级文档解析能力
+  4. 更新配置文件支持后端切换（`backend: local | ragflow`）
+  5. 添加 `get_backend()` 和 `get_backend_from_config()` 工厂方法
+- **解决效果**：
+  - 知识库模块支持后端切换，便于后期扩展
+  - RAGFlow 集成代码独立存放在 `mechforge_knowledge/backends/` 目录，便于删除
+  - 配置文件新增 `knowledge.backend` 和 `knowledge.ragflow` 配置项
+
+---
+
 ## 2026年3月4日
 
 ### 问题1：RAG引擎启动延迟与HuggingFace警告
