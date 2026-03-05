@@ -33,12 +33,19 @@ class MechForgeTerminal:
         self.ui = UIRenderer(version="v0.4.0")
         self.command_handler = CommandHandler(self.config)
 
-        # RAG 引擎
+        # RAG 引擎（延迟初始化）
         self.rag_enabled = self.config.knowledge.rag.enabled
-        self.rag_engine = self._create_rag_engine()
+        self._rag_engine: RAGEngine | None = None
 
         # 加载对话历史
         self._load_conversation_history()
+
+    @property
+    def rag_engine(self) -> RAGEngine:
+        """延迟加载 RAG 引擎"""
+        if self._rag_engine is None:
+            self._rag_engine = self._create_rag_engine()
+        return self._rag_engine
 
     def _create_rag_engine(self) -> RAGEngine:
         """创建 RAG 引擎"""
@@ -72,11 +79,22 @@ class MechForgeTerminal:
         print()
         self.ui.gear_spin("系统启动中", 0.8)
         self.ui.print_banner()
+
+        # 获取知识库路径（不触发 RAG 引擎加载）
+        kb_path = None
+        if self.rag_enabled:
+            kb_path = self.rag_engine.knowledge_path
+        else:
+            # 直接检查配置路径
+            config_path = Path(self.config.knowledge.path)
+            if config_path.exists():
+                kb_path = config_path
+
         self.ui.print_dashboard(
             api_type=self.llm.get_api_type(),
             model_name=self.llm.get_current_model_name(),
             rag_enabled=self.rag_enabled,
-            kb_path=self.rag_engine.knowledge_path,
+            kb_path=kb_path,
             top_k=self.config.knowledge.rag.top_k,
             msg_count=len(self.conversation_history),
         )
@@ -120,17 +138,20 @@ class MechForgeTerminal:
 
     def _input_with_history(self, history_index: int = -1) -> str:
         """带命令历史的输入"""
+        from rich.console import Console
+
+        console = Console()
         try:
             import readline  # noqa: F401
 
             if history_index < 0:
-                return input(self.ui.get_prompt()).strip()
+                return console.input(self.ui.get_prompt()).strip()
             else:
                 if history_index < len(self.command_history):
                     return self.command_history[-(history_index + 1)]
                 return ""
         except ImportError:
-            return input(self.ui.get_prompt()).strip()
+            return console.input(self.ui.get_prompt()).strip()
 
     def _load_command_history(self):
         """加载命令历史"""

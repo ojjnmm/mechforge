@@ -65,25 +65,6 @@ class UIRenderer:
 ██║ ╚═╝ ██║███████╗╚██████╗██║  ██║██║     ╚██████╔╝██║  ██║╚██████╔╝███████╗
 ╚═╝     ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝[/cyan]"""
 
-        # 机器人 Panel
-        robot = Panel(
-            """[bold red]╔═╦═╗
-╠╣o o╠╣
-╚╡▄▄▄╞╝
- ╔╩═══╩╗
- ║ CAE ║╾
- ╚╦═══╦╝
- ╔╩╗ ╔╩╗
- ╚═╝ ╚═╝[/bold red]
-
-[green]✓ 就绪[/green]""",
-            title="[bold red]🤖 MechBot[/bold red]",
-            border_style="red",
-            box=box.ROUNDED,
-            padding=(0, 1),
-        )
-
-        # 使用 Table 并排显示
         console = Console(force_terminal=True, no_color=False)
 
         # Spinner 加载（先显示）
@@ -91,12 +72,7 @@ class UIRenderer:
             time.sleep(0.5)
 
         console.print()
-        table = Table(show_header=False, box=None, padding=0)
-        table.add_column(width=75, no_wrap=True)
-        table.add_column(width=18, no_wrap=True)
-        table.add_row(logo, robot)
-
-        console.print(table)
+        console.print(logo)
 
         # Rich Rule 分隔线
         console.print(Rule("[bold cyan]MechForge System Initialized", style="cyan"), style="cyan")
@@ -159,7 +135,7 @@ class UIRenderer:
 
     def get_prompt(self) -> str:
         """获取输入提示符"""
-        return "[spring_green3][MechBot] >[/spring_green3] "
+        return "[spring_green3][MechForge] >[/spring_green3] "
 
     def get_thinking_message(self, has_context: bool = False) -> str:
         """获取思考提示消息"""
@@ -178,6 +154,8 @@ class UIRenderer:
                 print(f"\r{frame}{text}...", end="", flush=True)
                 time.sleep(0.1)
         print(f"\r    {text}... ✓")
+        # 添加水平分隔线
+        console.print(Rule(style="dim cyan"))
 
     def thinking_spinner(self, message: str):
         """带动画的思考"""
