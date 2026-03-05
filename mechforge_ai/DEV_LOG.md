@@ -20,6 +20,20 @@
 
 ---
 
+### 问题3：v0.4.0 先行版本打包发布
+- **发现者**：小夏
+- **问题描述**：项目基本框架已完成，需要打包发布先行版本到 PyPI
+- **解决方法**：
+  1. 修复 `pyproject.toml` 配置：将 `where = ["packages"]` 改为 `where = ["."]`，解决包路径问题
+  2. 更新 license 配置为 SPDX 格式 `license = "MIT"`
+  3. 添加 keywords 字段
+  4. 运行 `python -m build` 构建 sdist 和 wheel
+- **解决效果**：成功构建发布包
+  - `mechforge_ai-0.4.0-py3-none-any.whl` (126 KB)
+  - `mechforge_ai-0.4.0.tar.gz` (156 KB)
+
+---
+
 ## 2026年3月4日
 
 ### 问题1：RAG引擎启动延迟与HuggingFace警告

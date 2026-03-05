@@ -8,15 +8,15 @@ version = "0.4.0"
 description = "MechForge AI - Mechanical Engineering AI Assistant"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "MechForge Team"}
 ]
+keywords = ["mechanical engineering", "ai", "cad", "cae", "fem", "llm", "rag", "mcp"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Mechanical Engineering",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -97,9 +97,9 @@ Repository = "https://github.com/yd5768365-hue/mechforge"
 Issues = "https://github.com/yd5768365-hue/mechforge/issues"
 
 [tool.setuptools.packages.find]
-where = ["packages"]
+where = ["."]
 include = ["mechforge_*"]
-exclude = ["tests*", "docs*", "src*"]
+exclude = ["tests*", "docs*", "examples*"]
 
 [tool.setuptools.package-data]
 mechforge_core = ["*.yaml", "*.json"]

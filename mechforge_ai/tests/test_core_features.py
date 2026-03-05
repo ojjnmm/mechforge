@@ -289,7 +289,9 @@ class TestSecurity:
         assert validator.sanitize_sql("Hello World") == "Hello World"
 
         # SQL 注入应该抛出异常
-        with pytest.raises(ValueError):
+        from mechforge_core.security import SecurityError
+
+        with pytest.raises(SecurityError):
             validator.sanitize_sql("'; DROP TABLE users; --")
 
     def test_input_validator_xss(self):
@@ -300,7 +302,7 @@ class TestSecurity:
         assert validator.sanitize_xss("Hello") == "Hello"
 
         # XSS 应该抛出异常
-        with pytest.raises(ValueError):
+        with pytest.raises(SecurityError):
             validator.sanitize_xss("<script>alert('xss')</script>")
 
     def test_api_token_manager(self):
