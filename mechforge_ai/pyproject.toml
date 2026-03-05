@@ -70,6 +70,12 @@ web = [
 web-full = [
     "mechforge-ai[web,work,rag]",
 ]
+gui = [
+    "PySide6>=6.6.0",
+]
+build = [
+    "pyinstaller>=6.0.0",
+]
 docs = [
     "mkdocs>=1.5.3",
     "mkdocs-material>=9.4.0",
@@ -80,7 +86,7 @@ docs = [
     "pymdown-extensions>=10.3.0",
 ]
 all = [
-    "mechforge-ai[dev,llm,rag,work,web,docs]"
+    "mechforge-ai[dev,llm,rag,work,web,gui,docs]"
 ]
 
 [project.scripts]
@@ -89,6 +95,7 @@ mechforge-k = "mechforge_knowledge.cli:main"
 mechforge-work = "mechforge_work.work_cli:main"
 mechforge-web = "mechforge_web.main:main"
 mechforge-model = "mechforge_ai.model_cli:main"
+mechforge-gui = "mechforge_gui_ai.app:main"
 
 [project.urls]
 Homepage = "https://github.com/yd5768365-hue/mechforge"

@@ -58,6 +58,12 @@ mechforge_ai/
 ├── mechforge_theme/         # 主题组件
 │   ├── colors.py            # 颜色定义
 │   └── components.py        # UI 组件
+├── mechforge_gui_ai/        # GUI 桌面应用 (PySide6)
+│   ├── app.py               # 应用入口
+│   ├── main_window.py       # 主窗口
+│   ├── theme.py             # 终端风格主题
+│   ├── dialogs.py           # 配置对话框
+│   └── build_gui.py         # 打包脚本
 ├── tests/                   # 测试
 │   ├── unit/                # 单元测试
 │   ├── integration/         # 集成测试
@@ -87,7 +93,8 @@ pip install -e ".[dev,all]"
 ### 运行命令
 
 ```bash
-mechforge              # AI 对话模式
+mechforge              # AI 对话模式 (终端)
+mechforge-gui          # AI 对话模式 (GUI桌面应用)
 mechforge-k            # 知识库模式
 mechforge-work         # CAE 工作台
 mechforge-work --tui   # CAE TUI 界面
@@ -283,15 +290,6 @@ mechforge-web --port 8081
 - `config.yaml` - 配置文件示例
 - `.env.example` - 环境变量模板
 
-Always run tests or verify the application starts before claiming a task is complete. Never claim completion without verification.
-
-When user reports an error, read the actual error logs first before proposing solutions. Do not assume the cause.
-
-For GUI/Flet code: test that the app launches successfully before submitting changes. Common issues include incorrect icon names, alignment properties, and Card API usage.
-
-After moving or restructuring packages, always verify imports work by running a quick import test or the application entry point.
-
-When creating or modifying Python files, ensure all new exports are added to __init__.py if they need to be importable from the package root.
 
 ## Qwen Added Memories
 - 每次完成任务后记录 MechForge AI 开发日志到 DEV_LOG.md。格式示例：
@@ -305,7 +303,3 @@ When creating or modifying Python files, ensure all new exports are added to __i
   2. 添加环境变量抑制 HF 警告
 - **解决效果**：启动速度提升，不再显示警告信息
 
--Before marking this task complete, run the tests and verify the application starts without errors.
--I'm getting an error. Please read the error log/output first, then diagnose the actual cause before proposing a fix.
--Make this change incrementally - modify one file, verify it works, then move to the next. Test after each step.
--This change is working well. Please commit it with a descriptive message before we continue.
